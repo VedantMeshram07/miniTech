@@ -1,0 +1,195 @@
+/* 
+ * TechFest Website - Main Stylesheet
+ * Modular CSS Architecture for Maintainability and Scalability
+ * 
+ * Structure:
+ * 1. CSS Custom Properties (Design System)
+ * 2. Base Styles and Reset
+ * 3. Layout Components
+ * 4. UI Components
+ * 5. Animations and Effects
+ * 6. Utilities and Responsive Design
+ */
+
+/* ===== FOUNDATION ===== */
+/* CSS Custom Properties - Design System Variables */
+@import url('./layout/variables.css');
+
+/* Base Styles and CSS Reset */
+@import url('./layout/base.css');
+
+/* Responsive Design and Accessibility Utilities */
+@import url('./layout/utilities.css');
+
+/* ===== LAYOUT COMPONENTS ===== */
+/* Navigation Bar */
+@import url('./components/navbar.css');
+
+/* Hero Section with Animations */
+@import url('./components/hero.css');
+
+/* Footer */
+@import url('./components/footer.css');
+
+/* ===== UI COMPONENTS ===== */
+/* Button Styles */
+@import url('./components/buttons.css');
+
+/* Events Section and Cards */
+@import url('./components/events.css');
+
+/* Contact Section and Coordinators */
+@import url('./components/contact.css');
+
+/* ===== EFFECTS & ANIMATIONS ===== */
+/* All Animation Keyframes */
+@import url('./components/animations.css');
+
+/* ===== REMAINING LEGACY STYLES ===== */
+/* TODO: These sections need to be extracted to components in future updates */
+
+/* Typography Enhancements */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.section-title {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Specific targeting for H2 with gradient-text class */
+h2.gradient-text,
+h2.event-title.gradient-text {
+    background: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #AF52DE 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    font-size: 4.5rem !important;
+    font-weight: 800 !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    text-shadow: none !important;
+}
+
+/* Enhanced Interactive Effects */
+/* Navigation hover effects */
+.nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.nav-link:hover::before {
+    left: 100%;
+}
+
+/* Enhanced button effects */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+/* Enhanced card effects */
+.event-card,
+.coordinator-card {
+    overflow: hidden;
+}
+
+/* Image zoom on hover */
+.event-image {
+    transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-image {
+    transform: scale(1.05);
+}
+
+.event-card:hover .event-image img {
+    transform: scale(1.1);
+}
+
+/* Glow effect */
+.glow {
+    box-shadow: 0 0 20px var(--primary-color);
+    transition: box-shadow 0.3s ease;
+}
+
+.glow:hover {
+    box-shadow: 0 0 30px var(--primary-color), 0 0 40px var(--primary-color);
+}
+
+/* Loading states and skeleton animations are handled by skeleton keyframes in animations.css */
+
+/* Animation helper classes are defined in animations.css */
+
+/* Error states */
+.error {
+    border-color: var(--error-color) !important;
+    box-shadow: 0 0 0 2px rgba(255, 59, 48, 0.2) !important;
+}
+
+/* Success states */
+.success {
+    border-color: var(--success-color) !important;
+    box-shadow: 0 0 0 2px rgba(52, 199, 89, 0.2) !important;
+}
+
+/* Dark mode adjustments - already handled in base.css */
+
+/* Print styles */
+@media print {
+    .navbar,
+    .footer,
+    .hero-animations,
+    .floating-card,
+    .hero-circle {
+        display: none !important;
+    }
+    
+    * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+}

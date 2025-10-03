@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="event-title">Event Details - TechFest 2025</title>
+    <link rel="stylesheet" href="../assets/css/style-new.css">
+    <link rel="stylesheet" href="../assets/css/event-details.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="../index.html" class="logo-link">
+                    <span id="nav-college-name">TechFest</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="../index.html#events" class="nav-link">Events</a>
+                <a href="../index.html#about" class="nav-link">About</a>
+                <a href="../index.html#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Event Details Section -->
+    <section class="event-details">
+        <div class="container">
+            <!-- Back Button -->
+            <div class="back-navigation">
+                <button class="btn-back" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Events</span>
+                </button>
+            </div>
+
+            <!-- Event Header -->
+            <div class="event-header">
+                <div class="event-image-container">
+                    <div id="event-image" class="event-image-large">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                </div>
+                <div class="event-info">
+                    <div class="event-category">
+                        <span id="event-category-badge">Technology</span>
+                    </div>
+                    <h1 id="event-title-main">Loading Event...</h1>
+                    <p id="event-description-main">Loading description...</p>
+                    
+                    <div class="event-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-trophy"></i>
+                            <div>
+                                <span class="stat-label">Prize Pool</span>
+                                <span id="event-prize-amount" class="stat-value">₹0</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calendar"></i>
+                            <div>
+                                <span class="stat-label">Date</span>
+                                <span id="event-date-value" class="stat-value">TBD</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <span class="stat-label">Participation</span>
+                                <span id="event-participation-type" class="stat-value">Individual</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-user-friends"></i>
+                            <div>
+                                <span class="stat-label">Team Size</span>
+                                <span id="event-team-requirements" class="stat-value">Individual</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="event-actions">
+                        <button class="btn btn-primary" onclick="handleRegistration()">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Register Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Details Content -->
+            <div class="event-content">
+                <div class="content-main">
+                    <!-- Description -->
+                    <div class="content-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-info-circle"></i>
+                            About This Event
+                        </h2>
+                        <div id="event-description-detailed" class="section-content">
+                            Loading detailed description...
+                        </div>
+                    </div>
+
+                    <!-- Rules -->
+                    <div class="content-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-list-check"></i>
+                            Rules & Guidelines
+                        </h2>
+                        <div id="event-rules" class="section-content">
+                            <div class="loading-skeleton">
+                                <div class="skeleton-item"></div>
+                                <div class="skeleton-item"></div>
+                                <div class="skeleton-item"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="content-sidebar">
+                    <!-- Event Coordinators -->
+                    <div class="sidebar-card">
+                        <h3>Event Coordinators</h3>
+                        <div id="event-coordinators" class="coordinators-list">
+                            <div class="loading-skeleton">
+                                <div class="skeleton-coordinator"></div>
+                                <div class="skeleton-coordinator"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Events Section -->
+    <section class="related-events">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Other Events You Might Like</h2>
+                <p class="section-description">Discover more exciting competitions and workshops.</p>
+            </div>
+            <div id="related-events-grid" class="events-grid">
+                <!-- Related events will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Firebase Config -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../assets/js/firebase-config.js"></script>
+    <script src="../assets/js/event-details.js"></script>
+</body>
+</html>
