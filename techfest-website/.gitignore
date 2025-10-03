@@ -10,7 +10,19 @@ firebase-debug.*.log*
 # Firebase cache
 .firebase/
 
-# Firebase config
+# Firebase config and sensitive files
+assets/js/firebase-config.js
+config.txt
+*.config.js
+.env
+.env.local
+.env.production
+.env.staging
+
+# API Keys and secrets
+api-keys.js
+secrets.js
+credentials.json
 
 # Uncomment this if you'd like others to create their own Firebase project.
 # For a team working on the same Firebase project(s), it is recommended to leave
