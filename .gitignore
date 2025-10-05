@@ -19,6 +19,9 @@ config.txt
 .env.production
 .env.staging
 
+# But allow .env.example to be tracked
+!.env.example
+
 # API Keys and secrets
 api-keys.js
 secrets.js

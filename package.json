@@ -1,0 +1,59 @@
+{{
+
+  "name": "techfest-website",  "name": "techfest-website",
+
+  "version": "1.0.0",   "version": "1.0.0", 
+
+  "description": "TechCarvaan 2025 - Technical Festival Website with Environment Variables",  "description": "TechCarvaan 2025 - Technical Festival Website",
+
+  "main": "index.html",  "main": "techfest-website/index.html",
+
+  "scripts": {  "scripts": {
+
+    "start": "python -m http.server ${PORT:-8080}",    "start": "cd techfest-website && python -m http.server ${PORT:-8080}",
+
+    "dev": "python -m http.server 3000",    "dev": "cd techfest-website && python -m http.server 3000",
+
+    "build": "node build.js",    "build": "echo 'Static site - no build required'"
+
+    "build:prod": "NODE_ENV=production node build.js"  },
+
+  },  "repository": {
+
+  "repository": {    "type": "git",
+
+    "type": "git",    "url": "https://github.com/VedantMeshram07/miniTech.git"
+
+    "url": "https://github.com/VedantMeshram07/miniTech.git"  },
+
+  },  "keywords": [
+
+  "keywords": [    "techfest",
+
+    "techfest",    "festival", 
+
+    "festival",     "website",
+
+    "website",    "firebase",
+
+    "firebase",    "static"
+
+    "static",  ],
+
+    "environment-variables"  "author": "GCOEJ Technical Council",
+
+  ],  "license": "MIT",
+
+  "author": "GCOEJ Technical Council",  "engines": {
+
+  "license": "MIT",    "node": ">=14.0.0"
+
+  "engines": {  }
+
+    "node": ">=14.0.0"}
+  },
+  "devDependencies": {
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  }
+}
