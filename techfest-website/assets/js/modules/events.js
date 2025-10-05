@@ -15,19 +15,23 @@ let eventsData = [];
 export async function loadEvents() {
     try {
         console.log('📅 Loading events from Firebase...');
-        
-        const events = await getCollection('events', {
-            orderBy: { field: 'date', direction: 'asc' },
-            where: [['isActive', '==', true]]
+        // Fetch all events to avoid missing composite indexes or schema variance
+        const all = await getCollection('events');
+        // Support both isActive and active flags
+        const active = (all || []).filter(e => e && (e.isActive === true || e.active === true));
+        // Sort client-side by date if present
+        active.sort((a, b) => {
+            const da = new Date(a?.date || 0).getTime();
+            const db = new Date(b?.date || 0).getTime();
+            return da - db;
         });
-        
-        eventsData = events;
-        console.log(`✅ Loaded ${events.length} events`);
-        return events;
+        eventsData = active;
+        console.log(`✅ Loaded ${eventsData.length} events from Firebase`);
+        return eventsData;
     } catch (error) {
-        console.error('❌ Error loading events:', error);
-        // Fallback to default events
-        eventsData = getDefaultEvents();
+        console.error('❌ Error loading events from Firebase:', error);
+        console.error('Please add events using the admin panel first');
+        eventsData = []; // Return empty array instead of fallback
         return eventsData;
     }
 }
@@ -69,6 +73,8 @@ export function renderEvents(events = null) {
     
     // Initialize card animations
     initializeEventCardAnimations();
+    // Apply three-column layout and size adjustments
+    applyEventGridLayout();
     
     console.log(`✅ Rendered ${eventsToRender.length} events`);
 }
@@ -83,6 +89,10 @@ function createEventCard(event, index) {
     const card = document.createElement('div');
     card.className = 'event-card';
     card.style.animationDelay = `${index * 0.1}s`;
+    // Attach event id for easier poster mapping
+    if (event && event.id) {
+        card.setAttribute('data-event-id', String(event.id));
+    }
     
     // Sanitize event data
     const safeEvent = {
@@ -95,20 +105,19 @@ function createEventCard(event, index) {
         imageUrl: event.imageUrl || ''
     };
     
+    // Build poster path based on event ID as per naming convention poster-<eventId>
+    const posterPath = safeEvent.id ? `assets/posters/poster-${safeEvent.id}.jpg` : '';
+    const posterAlt = safeEvent.title || 'Event Poster';
+
     card.innerHTML = `
-        <div class="event-image">
-            ${safeEvent.imageUrl ? 
-                `<img src="${safeEvent.imageUrl}" alt="${safeEvent.title}" loading="lazy">` :
-                `<i class="fas fa-calendar-alt"></i>`
+        <div class="event-image a4-poster">
+            ${safeEvent.id ? 
+                `<img src="${posterPath}" alt="${posterAlt}" loading="lazy" onerror="this.onerror=null;this.src='assets/posters/placeholder-poster.svg';">` :
+                `<img src="assets/posters/placeholder-poster.svg" alt="${posterAlt}" loading="lazy">`
             }
         </div>
-        <div class="event-content">
+        <div class="event-content compact">
             <h3 class="event-title">${safeEvent.title}</h3>
-            <p class="event-description">${safeEvent.description}</p>
-            <div class="event-meta">
-                <span class="event-prize">Prize: ${safeEvent.prize}</span>
-                <span class="event-date">${safeEvent.date}</span>
-            </div>
             <button class="btn btn-primary event-button" onclick="openEventDetails('${safeEvent.id}')">
                 View Details
                 <i class="fas fa-arrow-right"></i>
@@ -181,7 +190,7 @@ export function openEventDetails(eventId) {
     sessionStorage.setItem('selectedEventId', eventId);
     
     // Navigate to details page
-    window.location.href = 'events/details.html';
+    window.location.href = `events/details.html?id=${encodeURIComponent(eventId)}`;
 }
 
 /**
@@ -292,12 +301,16 @@ export async function deleteEvent(eventId) {
  */
 export function listenToEvents(callback) {
     return listenToCollection('events', (events) => {
-        eventsData = events.filter(event => event.isActive);
+        const filtered = (events || []).filter(event => event && (event.isActive === true || event.active === true));
+        // Sort by date client-side
+        filtered.sort((a, b) => {
+            const da = new Date(a?.date || 0).getTime();
+            const db = new Date(b?.date || 0).getTime();
+            return da - db;
+        });
+        eventsData = filtered;
         renderEvents();
         if (callback) callback(eventsData);
-    }, {
-        orderBy: { field: 'date', direction: 'asc' },
-        where: [['isActive', '==', true]]
     });
 }
 
@@ -329,3 +342,50 @@ function sanitizeText(text) {
 
 // Make openEventDetails globally available for onclick handlers
 window.openEventDetails = openEventDetails;
+
+/**
+ * Apply three-column layout rules and shrink card sizes.
+ * Rules:
+ * - Desktop (>= 992px): 3 columns
+ * - If remainder 1 on last row: center the single card (column 2)
+ * - If remainder 2 on last row: place cards in columns 1 and 3
+ * Also add a 'small' class to cards to slightly reduce spacing.
+ */
+function applyEventGridLayout() {
+    const grid = document.getElementById('events-grid');
+    if (!grid) return;
+    const cards = Array.from(grid.querySelectorAll('.event-card'));
+    // Make cards slightly smaller
+    cards.forEach(card => card.classList.add('small'));
+    
+    // Clear previous manual placements
+    cards.forEach(card => {
+        card.style.gridColumn = '';
+        card.style.gridRow = '';
+    });
+    
+    const isDesktop = window.matchMedia('(min-width: 992px)').matches;
+    if (!isDesktop) return; // Only apply on desktop; mobile/tablet use responsive defaults
+    
+    const n = cards.length;
+    if (n === 0) return;
+    const rem = n % 3;
+    if (rem === 1) {
+        // Center the last card
+        const last = cards[n - 1];
+        last.style.gridColumn = '2 / span 1';
+    } else if (rem === 2) {
+        // Place last two as left and right columns
+        const secondLast = cards[n - 2];
+        const last = cards[n - 1];
+        secondLast.style.gridColumn = '1 / span 1';
+        last.style.gridColumn = '3 / span 1';
+    }
+}
+
+// Re-apply layout on resize (debounced)
+let __applyLayoutRaf;
+window.addEventListener('resize', () => {
+    if (__applyLayoutRaf) cancelAnimationFrame(__applyLayoutRaf);
+    __applyLayoutRaf = requestAnimationFrame(applyEventGridLayout);
+});

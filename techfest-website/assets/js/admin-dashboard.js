@@ -9,6 +9,11 @@ let currentEditingEvent = null;
 let currentEditingCoordinator = null;
 let deleteCallback = null;
 let isInitialized = false;
+// Realtime listeners
+let eventsUnsub = null;
+let coordinatorsUnsub = null;
+// Optional client-side admin allowlist (enforce via Firestore rules too)
+const ALLOWED_ADMINS = [];
 
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -33,11 +38,12 @@ async function initializeDashboard() {
         // Load all data
         await loadDashboardData();
         
-        // Initialize UI components
+    // Initialize UI components
         initializeNavigation();
         initializeModals();
         initializeEventFilters();
         initializeFormHandlers();
+    initializeRealtimeListeners();
         
         // Show dashboard tab by default
         switchTab('dashboard');
@@ -79,6 +85,13 @@ async function checkAuthentication() {
         window.auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
+                if (ALLOWED_ADMINS.length && !ALLOWED_ADMINS.includes(user.email)) {
+                    console.error('Unauthorized admin email:', user.email);
+                    showError('You are not authorized to access the admin panel.');
+                    redirectToLogin();
+                    resolve(false);
+                    return;
+                }
                 updateUserInfo(user.email);
                 resolve(true);
             } else {
@@ -108,6 +121,45 @@ async function loadDashboardData() {
         loadCoordinators(),
         updateDashboardStats()
     ]);
+}
+
+// Set up realtime listeners for immediate UI refresh
+function initializeRealtimeListeners() {
+    if (!window.db) {
+        console.warn('Firestore not available for realtime listeners');
+        return;
+    }
+    // Clean up existing listeners
+    if (eventsUnsub) { try { eventsUnsub(); } catch (e) {} eventsUnsub = null; }
+    if (coordinatorsUnsub) { try { coordinatorsUnsub(); } catch (e) {} coordinatorsUnsub = null; }
+
+    try {
+        eventsUnsub = window.db.collection('events').onSnapshot((snapshot) => {
+            const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            docs.sort((a, b) => new Date(a?.date || 0) - new Date(b?.date || 0));
+            eventsData = docs;
+            renderEventsList();
+            updateDashboardStats();
+        }, (err) => console.error('Events realtime error:', err));
+    } catch (e) {
+        console.error('Failed to subscribe to events:', e);
+    }
+
+    try {
+        coordinatorsUnsub = window.db.collection('coordinators').orderBy('name', 'asc').onSnapshot((snapshot) => {
+            coordinatorsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderCoordinatorsList();
+            updateDashboardStats();
+        }, (err) => console.error('Coordinators realtime error:', err));
+    } catch (e) {
+        console.error('Failed to subscribe to coordinators:', e);
+    }
+
+    // Unsubscribe on unload
+    window.addEventListener('beforeunload', () => {
+        if (eventsUnsub) try { eventsUnsub(); } catch (e) {}
+        if (coordinatorsUnsub) try { coordinatorsUnsub(); } catch (e) {}
+    });
 }
 
 // Load site configuration
@@ -238,8 +290,7 @@ function initializeFormHandlers() {
     const siteConfigForm = document.getElementById('site-config-form');
     if (siteConfigForm) {
         siteConfigForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await handleSiteConfigSave();
+            await handleSiteConfigSave(e);
         });
     }
 }
@@ -323,13 +374,14 @@ function renderEventsList() {
     
     // Apply filters
     const searchTerm = document.getElementById('events-search')?.value.toLowerCase() || '';
-    const categoryFilter = document.getElementById('events-category')?.value || '';
+    const categoryFilter = (document.getElementById('events-category')?.value || '').toLowerCase();
     const statusFilter = document.getElementById('events-status')?.value || '';
     
     let filteredEvents = eventsData.filter(event => {
+        const eventCat = (event.category || '').toLowerCase();
         const matchesSearch = event.title.toLowerCase().includes(searchTerm) || 
-                            event.category.toLowerCase().includes(searchTerm);
-        const matchesCategory = !categoryFilter || event.category === categoryFilter;
+                            eventCat.includes(searchTerm);
+        const matchesCategory = !categoryFilter || eventCat.includes(categoryFilter);
         const matchesStatus = !statusFilter || 
                             (statusFilter === 'active' && event.active) ||
                             (statusFilter === 'inactive' && !event.active);
@@ -368,25 +420,38 @@ function createEventItem(event) {
             <i class="fas fa-${icon}"></i>
         </div>
         <div class="event-item-info">
-            <h4>${event.title}</h4>
+            <h4></h4>
             <div class="event-item-meta">
-                <span>${event.category}</span>
-                <span>${event.prize}</span>
-                <span>${event.date}</span>
+                <span class="meta-category"></span>
+                <span class="meta-prize"></span>
+                <span class="meta-date"></span>
             </div>
         </div>
         <div class="event-status ${event.active ? 'active' : 'inactive'}">
             ${event.active ? 'Active' : 'Inactive'}
         </div>
         <div class="event-actions">
-            <button class="btn btn-sm btn-secondary" onclick="editEvent('${event.id}')" title="Edit Event">
+            <button class="btn btn-sm btn-secondary" title="Edit Event">
                 <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="deleteEvent('${event.id}')" title="Delete Event">
+            <button class="btn btn-sm btn-danger" title="Delete Event">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
     `;
+    // Safe text insertion
+    const titleEl = eventItem.querySelector('h4');
+    const catEl = eventItem.querySelector('.meta-category');
+    const prizeEl = eventItem.querySelector('.meta-prize');
+    const dateEl = eventItem.querySelector('.meta-date');
+    if (titleEl) titleEl.textContent = event.title || '';
+    if (catEl) catEl.textContent = event.category || '';
+    if (prizeEl) prizeEl.textContent = event.prize || '';
+    if (dateEl) dateEl.textContent = event.date || '';
+    // Bind actions without inline handlers
+    const [editBtn, delBtn] = eventItem.querySelectorAll('.event-actions .btn');
+    if (editBtn) editBtn.addEventListener('click', () => editEvent(event.id));
+    if (delBtn) delBtn.addEventListener('click', () => deleteEvent(event.id));
     
     return eventItem;
 }
@@ -473,20 +538,27 @@ function createCoordinatorCard(coordinator) {
     
     card.innerHTML = `
         <div class="coordinator-actions">
-            <button class="btn btn-sm btn-secondary" onclick="editCoordinator('${coordinator.id}')" title="Edit Coordinator">
+            <button class="btn btn-sm btn-secondary" title="Edit Coordinator">
                 <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="deleteCoordinator('${coordinator.id}')" title="Delete Coordinator">
+            <button class="btn btn-sm btn-danger" title="Delete Coordinator">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
-        <h4>${coordinator.name}</h4>
-        <div class="coordinator-role">${coordinator.role || 'Event Coordinator'}</div>
+        <h4></h4>
+        <div class="coordinator-role"></div>
         <div class="coordinator-contacts">
-            <span>${coordinator.phone || 'No phone provided'}</span>
-            <span>${coordinator.email || 'No email provided'}</span>
+            <span class="phone"></span>
+            <span class="email"></span>
         </div>
     `;
+    card.querySelector('h4').textContent = coordinator.name || '';
+    card.querySelector('.coordinator-role').textContent = coordinator.role || 'Event Coordinator';
+    card.querySelector('.phone').textContent = coordinator.phone || 'No phone provided';
+    card.querySelector('.email').textContent = coordinator.email || 'No email provided';
+    const [editBtn, delBtn] = card.querySelectorAll('.coordinator-actions .btn');
+    if (editBtn) editBtn.addEventListener('click', () => editCoordinator(coordinator.id));
+    if (delBtn) delBtn.addEventListener('click', () => deleteCoordinator(coordinator.id));
     
     return card;
 }
@@ -497,7 +569,13 @@ async function updateDashboardStats() {
         // Calculate stats
         const totalEvents = eventsData.length;
         const totalCoordinators = coordinatorsData.length;
-        const totalViews = Math.floor(Math.random() * 1000) + 500; // Simulated for demo
+        let totalViews = eventsData.reduce((sum, ev) => {
+            const v = (typeof ev.viewCount === 'number' ? ev.viewCount : (typeof ev.views === 'number' ? ev.views : 0));
+            return sum + v;
+        }, 0);
+        if (!totalViews && siteConfigData && typeof siteConfigData.totalViews === 'number') {
+            totalViews = siteConfigData.totalViews;
+        }
         
         // Calculate total prize money
         let totalPrizes = 0;
@@ -508,17 +586,78 @@ async function updateDashboardStats() {
             }
         });
         
+        console.log('📊 ADMIN: Dashboard stats calculated - Events:', totalEvents, 'Coordinators:', totalCoordinators);
+        
         // Update DOM elements
-        document.getElementById('total-events').textContent = totalEvents;
-        document.getElementById('total-coordinators').textContent = totalCoordinators;
-        document.getElementById('total-views').textContent = totalViews.toLocaleString();
-        document.getElementById('total-prizes').textContent = `₹${totalPrizes.toLocaleString()}`;
+    const elEvents = document.getElementById('total-events');
+    const elCoords = document.getElementById('total-coordinators');
+    const elViews = document.getElementById('total-views');
+    const elPrizes = document.getElementById('total-prizes');
+    if (elEvents) elEvents.textContent = totalEvents;
+    if (elCoords) elCoords.textContent = totalCoordinators;
+    if (elViews) elViews.textContent = Number(totalViews || 0).toLocaleString();
+    if (elPrizes) elPrizes.textContent = `₹${Number(totalPrizes || 0).toLocaleString()}`;
+        
+        // Auto-update the events count in the site config form
+        const eventsCountAdmin = document.getElementById('events-count-admin');
+        if (eventsCountAdmin && eventsCountAdmin.value != totalEvents) {
+            eventsCountAdmin.value = totalEvents;
+            console.log('📊 ADMIN: Auto-updated events count field to', totalEvents);
+        }
+        
+        // Auto-save the updated events count to Firebase
+        try {
+            if (window.dbManager && totalEvents !== (siteConfigData?.eventsCount || 0)) {
+                await window.dbManager.updateSiteConfig({
+                    eventsCount: totalEvents,
+                    lastUpdated: new Date().toISOString()
+                });
+                console.log('✅ ADMIN: Auto-saved events count to Firebase:', totalEvents);
+            }
+        } catch (error) {
+            console.error('❌ ADMIN: Error auto-saving events count:', error);
+        }
         
         // Add recent activity
         addRecentActivity();
         
     } catch (error) {
         console.error('Error updating dashboard stats:', error);
+    }
+}
+
+/**
+ * Sync stats between actual data and site config
+ */
+async function syncStatsToConfig() {
+    try {
+        console.log('🔄 ADMIN: Syncing stats to site config...');
+        
+        const actualEventsCount = eventsData.length;
+        const actualCoordinatorsCount = coordinatorsData.length;
+        
+        const syncData = {
+            eventsCount: actualEventsCount,
+            coordinatorsCount: actualCoordinatorsCount,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        if (window.dbManager) {
+            await window.dbManager.updateSiteConfig(syncData);
+            console.log('✅ ADMIN: Stats synced to Firebase:', syncData);
+            
+            // Update form fields
+            const eventsField = document.getElementById('events-count-admin');
+            const coordsField = document.getElementById('coordinators-count-admin');
+            
+            if (eventsField) eventsField.value = actualEventsCount;
+            if (coordsField) coordsField.value = actualCoordinatorsCount;
+            
+            showSuccess('Stats synced successfully!');
+        }
+    } catch (error) {
+        console.error('❌ ADMIN: Error syncing stats:', error);
+        showError('Failed to sync stats');
     }
 }
 
@@ -622,6 +761,12 @@ async function handleSiteConfigSave(e) {
         configData[key] = value.trim();
     }
     
+    // Add detailed logging
+    console.log('🔧 ADMIN: Starting site config save...');
+    console.log('🔧 ADMIN: Form data fields count:', Object.keys(configData).length);
+    console.log('🔧 ADMIN: Form data fields:', Object.keys(configData));
+    console.log('🔧 ADMIN: Complete config data to save:', configData);
+    
     const saveBtn = e.target.querySelector('button[type="submit"]');
     setLoading(saveBtn, true);
     
@@ -630,12 +775,27 @@ async function handleSiteConfigSave(e) {
             throw new Error('Database manager not available');
         }
         
+        console.log('🔧 ADMIN: Calling dbManager.updateSiteConfig...');
         await window.dbManager.updateSiteConfig(configData);
+        console.log('✅ ADMIN: Site config saved successfully to Firebase');
+        
+        // Verify what was actually saved
+        try {
+            const savedDoc = await window.db.collection('siteConfig').doc('main').get();
+            if (savedDoc.exists) {
+                const savedData = savedDoc.data();
+                console.log('🔍 ADMIN: Verification - Data actually saved:', savedData);
+                console.log('🔍 ADMIN: Verification - Fields saved:', Object.keys(savedData));
+            }
+        } catch (verifyError) {
+            console.error('❌ ADMIN: Error verifying saved data:', verifyError);
+        }
+        
         showSuccess('Site configuration saved successfully!');
         addRecentActivity('Site configuration updated', 'fas fa-cog');
         
     } catch (error) {
-        console.error('Error saving site config:', error);
+        console.error('❌ ADMIN: Error saving site config:', error);
         showError('Failed to save site configuration. Please try again.');
     } finally {
         setLoading(saveBtn, false);
@@ -645,15 +805,15 @@ async function handleSiteConfigSave(e) {
 // Event management functions
 function initializeEventFilters() {
     const searchInput = document.getElementById('events-search');
-    const categorySelect = document.getElementById('events-category');
+    const categoryInput = document.getElementById('events-category');
     const statusSelect = document.getElementById('events-status');
     
     if (searchInput) {
         searchInput.addEventListener('input', debounce(renderEventsList, 300));
     }
     
-    if (categorySelect) {
-        categorySelect.addEventListener('change', renderEventsList);
+    if (categoryInput) {
+        categoryInput.addEventListener('input', debounce(renderEventsList, 300));
     }
     
     if (statusSelect) {
@@ -707,12 +867,13 @@ function editEvent(eventId) {
     // Populate form
     document.getElementById('event-id').value = event.id;
     document.getElementById('event-title').value = event.title;
-    document.getElementById('event-category').value = event.category;
+    document.getElementById('event-category').value = event.category || '';
     document.getElementById('event-short-description').value = event.shortDescription;
     document.getElementById('event-description').value = event.description;
     document.getElementById('event-prize').value = event.prize;
     document.getElementById('event-date').value = event.date;
     document.getElementById('event-registration-link').value = event.registrationLink || '';
+    document.getElementById('event-participation-fee').value = event.participationFee || '';
     document.getElementById('event-team-requirements').value = event.teamRequirements || '';
     document.getElementById('event-active').checked = event.active;
     
@@ -769,10 +930,10 @@ async function saveEvent() {
     const formData = new FormData(form);
     
     // Validate required fields
-    const title = formData.get('title').trim();
-    const category = formData.get('category');
-    const shortDescription = formData.get('shortDescription').trim();
-    const description = formData.get('description').trim();
+    const title = sanitizeText(formData.get('title'));
+    const category = sanitizeText(formData.get('category'));
+    const shortDescription = sanitizeText(formData.get('shortDescription'));
+    const description = sanitizeText(formData.get('description'));
     
     if (!title || !category || !shortDescription || !description) {
         showError('Please fill in all required fields.');
@@ -782,16 +943,16 @@ async function saveEvent() {
     // Collect rules
     const ruleInputs = document.querySelectorAll('.rule-input');
     const rules = Array.from(ruleInputs)
-        .map(input => input.value.trim())
+        .map(input => sanitizeText(input.value))
         .filter(rule => rule.length > 0);
     
     // Collect coordinators
     const coordinatorItems = document.querySelectorAll('.coordinator-item');
     const contacts = Array.from(coordinatorItems).map(item => {
-        const name = item.querySelector('.coordinator-name').value.trim();
-        const phone = item.querySelector('.coordinator-phone').value.trim();
-        const email = item.querySelector('.coordinator-email').value.trim();
-        const role = item.querySelector('.coordinator-role').value.trim();
+        const name = sanitizeText(item.querySelector('.coordinator-name').value);
+        const phone = sanitizeText(item.querySelector('.coordinator-phone').value);
+        const email = sanitizeText(item.querySelector('.coordinator-email').value);
+        const role = sanitizeText(item.querySelector('.coordinator-role').value);
         
         if (name && phone && email && role) {
             return { name, phone, email, role };
@@ -804,10 +965,11 @@ async function saveEvent() {
         category,
         shortDescription,
         description,
-        prize: formData.get('prize').trim(),
-        date: formData.get('date').trim(),
-        registrationLink: formData.get('registrationLink').trim(),
-        teamRequirements: formData.get('teamRequirements').trim(),
+    prize: sanitizeText(formData.get('prize')),
+    date: sanitizeText(formData.get('date')),
+    registrationLink: sanitizeText(formData.get('registrationLink')),
+    participationFee: sanitizeText(formData.get('participationFee')),
+    teamRequirements: sanitizeText(formData.get('teamRequirements')),
         rules,
         contacts,
         active: formData.get('active') === 'on',
@@ -820,27 +982,31 @@ async function saveEvent() {
     try {
         const eventId = document.getElementById('event-id').value;
         
-        if (eventId) {
-            // Update existing event
-            if (!window.dbManager) {
-                throw new Error('Database manager not available');
-            }
-            
-            await window.dbManager.updateEvent(eventId, eventData);
-            showSuccess('Event updated successfully!');
-        } else {
-            // Create new event
-            eventData.id = generateEventId(title);
-            eventData.createdAt = new Date();
-            
-            if (!window.dbManager) {
-                throw new Error('Database manager not available');
-            }
-            
-            const newEventId = await window.dbManager.createEvent(eventData);
-            eventData.id = newEventId;
-            showSuccess('Event created successfully!');
+        if (!window.dbManager) {
+            throw new Error('Database manager not available');
         }
+        
+        // Determine event ID - use existing or generate new
+        const finalEventId = eventId || generateEventId(title);
+        
+        // Validate event ID
+        if (!finalEventId || finalEventId.length < 3) {
+            throw new Error('Invalid event ID generated. Please check the event title.');
+        }
+        
+        eventData.id = finalEventId;
+        console.log(`📝 Processing event: ${finalEventId} (${eventId ? 'update' : 'create'})`);
+        
+        // Add timestamps
+        if (!eventId) {
+            eventData.createdAt = new Date();
+        }
+        
+        // Use upsert to handle both create and update cases
+        await window.dbManager.upsertEvent(finalEventId, eventData);
+        
+        const action = eventId ? 'updated' : 'created';
+        showSuccess(`Event ${action} successfully!`);
         
         // Refresh UI
         await loadEvents();
@@ -856,9 +1022,18 @@ async function saveEvent() {
 }
 
 function generateEventId(title) {
-    return title.toLowerCase()
+    if (!title || title.trim().length === 0) {
+        return 'event-' + Date.now();
+    }
+    
+    const cleanId = title.toLowerCase()
+        .trim()
         .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '') + '-' + Date.now();
+        .replace(/^-+|-+$/g, '');
+    
+    // Ensure ID is not empty and has minimum length
+    const baseId = cleanId.length > 0 ? cleanId : 'event';
+    return baseId + '-' + Date.now();
 }
 
 async function deleteEvent(eventId) {
@@ -969,7 +1144,7 @@ async function saveCoordinator() {
     const form = document.getElementById('coordinator-form');
     const formData = new FormData(form);
     
-    const name = formData.get('name').trim();
+    const name = sanitizeText(formData.get('name'));
     if (!name) {
         showError('Coordinator name is required.');
         return;
@@ -977,9 +1152,9 @@ async function saveCoordinator() {
     
     const coordinatorData = {
         name,
-        role: formData.get('role').trim(),
-        phone: formData.get('phone').trim(),
-        email: formData.get('email').trim(),
+        role: sanitizeText(formData.get('role')),
+        phone: sanitizeText(formData.get('phone')),
+        email: sanitizeText(formData.get('email')),
         updatedAt: new Date()
     };
     
@@ -1224,4 +1399,12 @@ function hideLoading() {
             loadingOverlay.classList.remove('active');
         }, 300);
     }
+}
+
+// Basic sanitization to strip HTML tags and trim whitespace
+function sanitizeText(value) {
+    return String(value || '')
+        .replace(/<[^>]*>/g, '')
+        .replace(/[\u0000-\u001F\u007F]/g, '')
+        .trim();
 }

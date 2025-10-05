@@ -9,11 +9,11 @@
     /* Primary Colors */
     --primary-color: #007AFF;
     --primary-color-rgb: 0, 122, 255;
-    --primary-dark: #0051D5;
-    --primary-light: #66B2FF;
+    --primary-dark: #0056CC;
+    --primary-light: #40A6FF;
     
     /* Secondary Colors */
-    --secondary-color: #5856D6;
+    --secondary-color: #007AFF;
     --accent-color: #FF3B30;
     --success-color: #34C759;
     
@@ -30,9 +30,9 @@
     --shadow-heavy: rgba(0, 0, 0, 0.15);
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+    --gradient-primary: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
     --gradient-secondary: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%);
-    --gradient-text: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+    --gradient-text: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
     
     /* Spacing */
     --spacing-xs: 0.5rem;
@@ -86,6 +86,12 @@
 }
 
 /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 html {
     scroll-behavior: smooth;
     font-size: 16px;
@@ -99,6 +105,8 @@ body {
     background-color: #000000; /* Dark background */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
 }
 
 /* Ensure all informative elements have white text on dark background */
@@ -159,23 +167,32 @@ span {
     padding: 0 var(--spacing-md);
 }
 
-/* Typography */
+/* Typography - Linear inspired clean style */
 .gradient-text {
-    background: var(--gradient-text);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ffffff;
     font-size: 4.5rem !important;
-    font-weight: 800 !important;
+    font-weight: 600 !important;
+    text-shadow: none;
 }
 
 /* Specific targeting for H2 with gradient-text class */
 h2.gradient-text,
 h2.event-title.gradient-text {
     font-size: 4.5rem !important;
-    font-weight: 800 !important;
+    font-weight: 600 !important;
     margin: 0;
     line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+}
+
+/* Exception for random color effect - must override above */
+h2#hero-title-main.gradient-text.event-title.random-color-effect {
+    color: var(--random-color, #ffffff) !important;
+    text-shadow: 
+        0 1.4px 7px var(--random-color, #64b5f6) !important,
+        0 2.8px 14px var(--random-color, #64b5f6) !important,
+        0 4.2px 21px var(--random-color, #64b5f6) !important;
 }
 
 .section-title {
@@ -218,12 +235,12 @@ h2.event-title.gradient-text {
 .btn-primary {
     background: var(--gradient-primary);
     color: white;
-    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
 }
 
 .btn-secondary {
@@ -335,10 +352,10 @@ h2.event-title.gradient-text {
 /* Hero Section */
 .hero {
     min-height: 100vh;
-    display: block; /* Changed from flex to block for proper vertical stacking */
+    display: block;
     position: relative;
-    padding: 60px 0 40px; /* Reduced top padding to move container up */
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(88, 86, 214, 0.08) 100%);
+    padding: 120px 0 40px; /* Increased top padding to ensure content is visible below navbar */
+    background: #000000;
     overflow: hidden;
 }
 
@@ -373,7 +390,7 @@ h2.event-title.gradient-text {
 }
 
 .logo-placeholder.organizing-logo {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
 }
 
 .logo-placeholder.techfest-logo {
@@ -420,12 +437,12 @@ h2.event-title.gradient-text {
     width: 100px;
     height: 100px;
     margin: 0 auto var(--spacing-md);
-    background: rgba(0, 122, 255, 0.1);
+    background: rgba(139, 92, 246, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 3px solid rgba(0, 122, 255, 0.2);
+    border: 3px solid rgba(139, 92, 246, 0.2);
     animation: pulse 3s ease-in-out infinite;
 }
 
@@ -505,13 +522,14 @@ h2.event-title.gradient-text {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    padding: 8px 16px;
+    padding: 6px 12px;
     background: var(--background-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-xl);
-    font-size: var(--font-size-sm);
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--primary-color);
+    margin-top: 8px;
     margin-bottom: var(--spacing-lg);
     animation: slideInUp 0.8s ease-out;
 }
@@ -588,14 +606,14 @@ h2.event-title.gradient-text {
     animation: slideInUp 0.8s ease-out 0.4s both;
 }
 
-/* Hero Animations Background */
+/* Hero Animations Background - Layer 3: Glow effects and animations */
 .hero-animations {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; /* Behind the content */
+    z-index: 15; /* Above chips, below content */
     pointer-events: none; /* Allow clicking through to content */
     overflow: hidden;
 }
@@ -614,7 +632,7 @@ h2.event-title.gradient-text {
     animation: float 6s ease-in-out infinite;
     filter: blur(0.5px);
     transform: scale(0.8);
-    z-index: -1; /* Behind everything */
+    z-index: 20; /* Glow effects layer - above chips */
 }
 
 .floating-card i {
@@ -660,7 +678,7 @@ h2.event-title.gradient-text {
     background: var(--gradient-primary);
     opacity: 0.08;
     animation: pulse 4s ease-in-out infinite;
-    z-index: -1; /* Behind everything */
+    z-index: 18; /* Glow effects layer - above chips */
 }
 
 .circle-1 {
@@ -718,15 +736,28 @@ h2.event-title.gradient-text {
 
 .header-logo {
     flex: 0 0 auto;
-    width: 120px;
-    height: 120px;
+    width: 250px;
+    height: 250px;
 }
 
 .college-logo-img, .event-logo-img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border-radius: 20px;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transition: transform 0.3s ease;
+}
+
+.college-logo-img:hover, .event-logo-img:hover {
+    transform: scale(1.05);
+}
+
+/* Hide mobile logos on desktop */
+.mobile-logos-container {
+    display: none;
 }
 
 .organization-content {
@@ -825,13 +856,31 @@ h2.event-title.gradient-text {
 @media (max-width: 768px) {
     .organization-header {
         flex-direction: column;
-        gap: var(--spacing-lg);
+        gap: var(--spacing-md);
         text-align: center;
     }
     
-    .header-logo {
-        width: 100px;
-        height: 100px;
+    /* Hide desktop logos on mobile */
+    .desktop-logo {
+        display: none !important;
+    }
+    
+    /* Show mobile logos container */
+    .mobile-logos-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+        width: 100%;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .mobile-logos-container .header-logo {
+        width: 120px;
+        height: 120px;
     }
     
     .organization-name {
@@ -859,56 +908,26 @@ h2.event-title.gradient-text {
     }
     
     .hero {
-        padding: 60px 0 40px;
+        padding: 80px 0 40px;
     }
 }
 
 /* Events Section */
 .events-section {
     padding: var(--spacing-3xl) 0;
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.06) 0%, rgba(88, 86, 214, 0.06) 100%);
+    background: #000000;
     position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease-out;
+    overflow: visible;
 }
 
 /* Subtle background animation on scroll */
 .events-section.section-in-view {
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(88, 86, 214, 0.08) 100%);
+    background: #000000;
 }
 
-/* Subtle section transition indicator */
-.events-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-    border-radius: 2px;
-    opacity: 0;
-}
+/* Removed section transition indicator - pure black background only */
 
-.events-section.section-in-view::before {
-    animation: subtleIndicator 1.5s ease-out forwards;
-}
-
-@keyframes subtleIndicator {
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) scaleX(0);
-    }
-    50% {
-        opacity: 0.8;
-        transform: translateX(-50%) scaleX(1);
-    }
-    100% {
-        opacity: 0.6;
-        transform: translateX(-50%) scaleX(1);
-    }
-}
+/* Removed subtleIndicator keyframe animation */
 
 .section-title {
     opacity: 0;
@@ -944,16 +963,16 @@ h2.event-title.gradient-text {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius-2xl);
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 122, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
 
 .event-card:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 60px rgba(0, 122, 255, 0.15);
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
     background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(0, 122, 255, 0.3);
+    border-color: rgba(139, 92, 246, 0.3);
 }
 
 .event-image {
@@ -1104,6 +1123,7 @@ h2.event-title.gradient-text {
 /* About Section */
 .about-section {
     padding: var(--spacing-3xl) 0;
+    background: #000000;
 }
 
 .about-content {
@@ -1162,7 +1182,7 @@ h2.event-title.gradient-text {
 .about-image {
     width: 100%;
     height: 400px;
-    background: var(--gradient-primary);
+    background: #8b5cf6;
     border-radius: var(--border-radius-2xl);
     display: flex;
     align-items: center;
@@ -1183,7 +1203,7 @@ h2.event-title.gradient-text {
 /* Contact Section */
 .contact-section {
     padding: var(--spacing-3xl) 0;
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.06) 0%, rgba(88, 86, 214, 0.06) 100%);
+    background: #000000;
     position: relative;
     overflow: hidden;
 }
@@ -1207,23 +1227,51 @@ h2.event-title.gradient-text {
     align-items: flex-start;
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.1);
-    transition: all 0.3s ease;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(139, 92, 246, 0.2);
+    border-radius: 20px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     flex: 1;
     min-width: 250px;
     text-align: center;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Contact card sparkle effect */
+.contact-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(139, 92, 246, 0.1), 
+        transparent
+    );
+    transition: left 0.6s ease;
 }
 
 .contact-item:hover {
-    background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(0, 122, 255, 0.3);
-    transform: translateY(-2px);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.15),
+        0 0 40px rgba(139, 92, 246, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.contact-item:hover::before {
+    left: 100%;
 }
 
 .contact-item i {
@@ -1245,13 +1293,23 @@ h2.event-title.gradient-text {
     margin: 0;
 }
 
+/* Event Coordinators Section */
+.coordinators {
+    padding: 40px 20px;
+    background: white;
+    margin: 40px 0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .coordinators h3 {
-    font-size: var(--font-size-2xl);
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: var(--spacing-lg);
-    color: white !important;
+    margin-bottom: 30px;
+    color: #1D1D1F !important;
     text-align: center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: none;
 }
 
 /* 2-row coordinators layout */
@@ -1280,16 +1338,37 @@ h2.event-title.gradient-text {
 }
 
 .coordinator-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    padding: 24px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 122, 255, 0.1);
+    box-shadow: 
+        0 4px 20px rgba(139, 92, 246, 0.15),
+        0 8px 32px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
     min-width: 200px;
     max-width: 280px;
+    position: relative;
+    color: white;
+}
+
+.coordinator-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: 16px;
+    background: transparent;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
 /* Convenor card styling */
@@ -1305,9 +1384,17 @@ h2.event-title.gradient-text {
 }
 
 .coordinator-card:hover {
-    background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(0, 122, 255, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 48px rgba(139, 92, 246, 0.25),
+        0 8px 32px rgba(139, 92, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(139, 92, 246, 0.6);
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.coordinator-card:hover::before {
+    opacity: 1;
 }
 
 .convenor-card {
@@ -1317,7 +1404,7 @@ h2.event-title.gradient-text {
 .convenor-card .coordinator-avatar {
     width: 70px;
     height: 70px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: #8b5cf6;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1325,12 +1412,14 @@ h2.event-title.gradient-text {
     margin: 0 auto var(--spacing-sm) auto;
     font-size: 1.8rem;
     color: white;
+    position: relative;
+    overflow: hidden;
 }
 
 .co-convenor-card .coordinator-avatar {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    background: #8b5cf6;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1338,19 +1427,51 @@ h2.event-title.gradient-text {
     margin: 0 auto var(--spacing-sm) auto;
     font-size: 1.5rem;
     color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Image placeholder support for coordinator avatars */
+.coordinator-avatar .coordinator-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none; /* Hidden by default, will be shown when loaded */
+}
+
+.coordinator-avatar .initials {
+    position: relative;
+    z-index: 1;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* When photo is loaded, hide initials */
+.coordinator-avatar.has-photo .initials {
+    display: none;
+}
+
+.coordinator-avatar.has-photo .coordinator-photo {
+    display: block;
 }
 
 .coordinator-card h4 {
     font-size: var(--font-size-lg);
     font-weight: 600;
     margin-bottom: var(--spacing-xs);
-    color: #1D1D1F !important;
+    color: #ffffff !important;
 }
 
 .coordinator-card .role {
     font-size: var(--font-size-sm);
     font-weight: 500;
-    color: var(--primary-color) !important;
+    color: #a78bfa !important;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: var(--spacing-xs);
@@ -1358,7 +1479,7 @@ h2.event-title.gradient-text {
 
 .coordinator-card .contact {
     font-size: var(--font-size-sm);
-    color: #666666 !important;
+    color: #e5e5e5 !important;
     margin: 0;
 }
 
@@ -1425,7 +1546,7 @@ h2.event-title.gradient-text {
 }
 
 .footer-section p {
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     line-height: 1.6;
     font-weight: 500;
 }
@@ -1439,7 +1560,7 @@ h2.event-title.gradient-text {
 }
 
 .footer-section ul li a {
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     text-decoration: none;
     transition: color var(--transition-fast);
     font-weight: 500;
@@ -1463,7 +1584,7 @@ h2.event-title.gradient-text {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     text-decoration: none;
     transition: all var(--transition-normal);
     font-size: 1.2rem;
@@ -1471,11 +1592,11 @@ h2.event-title.gradient-text {
 }
 
 .social-links a:hover {
-    background: #007AFF !important;
+    background: #8b5cf6 !important;
     color: white !important;
     transform: translateY(-2px);
-    border-color: #007AFF;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    border-color: #8b5cf6;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .footer-bottom {
@@ -1485,12 +1606,12 @@ h2.event-title.gradient-text {
 }
 
 .footer-bottom p {
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     font-weight: 500;
 }
 
 .footer-bottom span {
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     font-weight: 600;
 }
 
@@ -1641,7 +1762,7 @@ h2.event-title.gradient-text {
 
 /* Gradient animation */
 .animated-gradient {
-    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+    background: linear-gradient(-45deg, #8b5cf6, #7c3aed, #f093fb, #f5576c);
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
 }

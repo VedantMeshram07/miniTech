@@ -5,14 +5,16 @@
 
 class CardPositioner {
     constructor() {
-        this.bufferZone = 30; // 30px buffer zone
+        this.bufferZone = 50; // Increased buffer zone for better spacing
         this.cardSize = 50; // Card width/height
-        this.cardBuffer = 25; // Buffer between cards
+        this.cardBuffer = 35; // Increased buffer between cards
         this.textElements = [];
         this.cards = [];
         this.placedCards = []; // Track positioned cards
         this.heroContainer = null;
         this.gridCells = []; // Available grid positions
+        this.debounceTimer = null;
+        this.retryAttempts = 150; // Increased retry attempts
     }
 
     init() {
@@ -32,9 +34,19 @@ class CardPositioner {
         this.findCards();
         this.positionCards();
 
-        // Reposition on window resize
+        // Reposition on window resize with debouncing
         window.addEventListener('resize', () => {
-            setTimeout(() => this.positionCards(), 100);
+            if (this.debounceTimer) {
+                clearTimeout(this.debounceTimer);
+            }
+            this.debounceTimer = setTimeout(() => {
+                this.positionCards();
+            }, 250);
+        });
+
+        // Reposition when page is fully loaded (after fonts, images)
+        window.addEventListener('load', () => {
+            setTimeout(() => this.positionCards(), 500);
         });
     }
 
@@ -47,7 +59,14 @@ class CardPositioner {
             '.hero-details',
             '.hero-stats',
             '.hero-buttons',
-            '.scroll-indicator'
+            '.scroll-indicator',
+            '.techfest-branding',
+            '.presents-text',
+            '.nav-logo',
+            '.nav-menu',
+            'h1', 'h2', 'h3', 'p', // Any text elements
+            '.detail-item',
+            '.stat'
         ];
 
         this.textElements = [];
@@ -58,15 +77,21 @@ class CardPositioner {
             this.textElements.push(navbar);
         }
         
-        // Add hero section elements
+        // Add hero section elements with better detection
         textSelectors.slice(1).forEach(selector => {
-            const elements = this.heroContainer.querySelectorAll(selector);
-            elements.forEach(el => {
-                if (el.offsetWidth > 0 && el.offsetHeight > 0) {
+            // Check both within hero container and document
+            const heroElements = this.heroContainer ? this.heroContainer.querySelectorAll(selector) : [];
+            const docElements = document.querySelectorAll(selector);
+            
+            [...heroElements, ...docElements].forEach(el => {
+                if (el.offsetWidth > 0 && el.offsetHeight > 0 && 
+                    !this.textElements.includes(el)) {
                     this.textElements.push(el);
                 }
             });
         });
+        
+        console.log(`Found ${this.textElements.length} text elements to avoid`);
     }
 
     findCards() {
@@ -112,33 +137,61 @@ class CardPositioner {
     createPositionGrid() {
         const heroBounds = this.getHeroBounds();
         const navbar = document.querySelector('.navbar');
-        const navbarHeight = navbar ? navbar.offsetHeight + this.bufferZone : 80;
+        const navbarHeight = navbar ? navbar.offsetHeight + this.bufferZone : 120;
         
         this.gridCells = [];
         
-        // Define left and right zones (avoid center where text is)
+        // More conservative zones to avoid content better
         const leftZone = {
-            startX: 20,
-            endX: Math.min(heroBounds.width * 0.35, 300),
-            startY: navbarHeight + 20,
-            endY: heroBounds.height - this.cardSize - 20
+            startX: 30,
+            endX: Math.min(heroBounds.width * 0.25, 250), // Narrower left zone
+            startY: navbarHeight + 30,
+            endY: heroBounds.height - this.cardSize - 30
         };
         
         const rightZone = {
-            startX: Math.max(heroBounds.width * 0.65, heroBounds.width - 300),
-            endX: heroBounds.width - this.cardSize - 20,
-            startY: navbarHeight + 20,
-            endY: heroBounds.height - this.cardSize - 20
+            startX: Math.max(heroBounds.width * 0.75, heroBounds.width - 250), // Narrower right zone
+            endX: heroBounds.width - this.cardSize - 30,
+            startY: navbarHeight + 30,
+            endY: heroBounds.height - this.cardSize - 30
         };
         
-        // Create grid positions for left zone
-        this.createZoneGrid(leftZone, 'left');
+        // Only create zones if they're wide enough
+        if (leftZone.endX > leftZone.startX + this.cardSize) {
+            this.createZoneGrid(leftZone, 'left');
+        }
         
-        // Create grid positions for right zone  
-        this.createZoneGrid(rightZone, 'right');
+        if (rightZone.endX > rightZone.startX + this.cardSize) {
+            this.createZoneGrid(rightZone, 'right');
+        }
+        
+        // Add corner positions as additional safe spots
+        this.addCornerPositions(heroBounds, navbarHeight);
         
         // Shuffle the grid cells for randomization
         this.shuffleArray(this.gridCells);
+        
+        console.log(`Created ${this.gridCells.length} potential positions`);
+    }
+    
+    addCornerPositions(heroBounds, navbarHeight) {
+        const cornerPositions = [
+            // Top corners
+            { x: 40, y: navbarHeight + 40, side: 'left' },
+            { x: heroBounds.width - this.cardSize - 40, y: navbarHeight + 40, side: 'right' },
+            
+            // Bottom corners  
+            { x: 40, y: heroBounds.height - this.cardSize - 40, side: 'left' },
+            { x: heroBounds.width - this.cardSize - 40, y: heroBounds.height - this.cardSize - 40, side: 'right' },
+            
+            // Mid-edge positions
+            { x: 40, y: heroBounds.height * 0.5, side: 'left' },
+            { x: heroBounds.width - this.cardSize - 40, y: heroBounds.height * 0.5, side: 'right' }
+        ];
+        
+        cornerPositions.forEach(pos => {
+            this.gridCells.push({ ...pos, occupied: false });
+        });
     }
 
     createZoneGrid(zone, side) {
@@ -266,17 +319,22 @@ class CardPositioner {
         };
     }
 
-    findSafePosition(maxAttempts = 100) {
+    findSafePosition(maxAttempts = 200) {
         for (let i = 0; i < maxAttempts; i++) {
             const position = this.generateRandomPosition();
             
             if (this.isPositionSafe(position.x, position.y)) {
+                this.placedCards.push({ x: position.x, y: position.y });
                 return position;
             }
         }
 
         // Try multiple fallback positions if random positioning fails
-        return this.getFallbackPosition();
+        const fallback = this.getFallbackPosition();
+        if (fallback) {
+            this.placedCards.push({ x: fallback.x, y: fallback.y });
+        }
+        return fallback;
     }
 
     getFallbackPosition() {
@@ -325,13 +383,33 @@ class CardPositioner {
 
         this.findTextElements(); // Refresh text elements positions
         this.placedCards = []; // Reset placed cards tracking
+        
+        // Reduce number of cards on mobile devices
+        const isMobile = window.innerWidth <= 768;
+        const isTablet = window.innerWidth <= 1024;
+        
+        let activeCards = [...this.cards];
+        
+        if (isMobile) {
+            // Show only 4 cards on mobile
+            activeCards = [...this.cards].slice(0, 4);
+            [...this.cards].slice(4).forEach(card => card.style.display = 'none');
+        } else if (isTablet) {
+            // Show 6 cards on tablet
+            activeCards = [...this.cards].slice(0, 6);
+            [...this.cards].slice(6).forEach(card => card.style.display = 'none');
+        } else {
+            // Show all cards on desktop
+            [...this.cards].forEach(card => card.style.display = 'flex');
+        }
+
         this.createPositionGrid(); // Create grid-based positioning
 
-        // Distribute cards evenly between left and right sides
+        // Distribute active cards evenly between left and right sides
         const leftCards = [];
         const rightCards = [];
         
-        this.cards.forEach((card, index) => {
+        activeCards.forEach((card, index) => {
             if (index % 2 === 0) {
                 leftCards.push(card);
             } else {
@@ -361,28 +439,52 @@ class CardPositioner {
             }
         });
 
+        // Handle cards that couldn't be positioned with grid system
+        const remainingCards = [...this.cards].filter(card => 
+            !positions.find(p => p.card === card)
+        );
+        
+        remainingCards.forEach(card => {
+            const safePosition = this.findSafePosition();
+            if (safePosition) {
+                positions.push({ card, position: safePosition });
+            }
+        });
+
+        console.log(`Positioned ${positions.length} out of ${this.cards.length} cards`);
+
         // Apply positions with staggered animations
         positions.forEach(({ card, position }, index) => {
             // Convert to percentage for responsive design
             const heroBounds = this.getHeroBounds();
-            const leftPercent = (position.x / heroBounds.width) * 100;
-            const topPercent = (position.y / heroBounds.height) * 100;
+            const leftPercent = Math.max(0, Math.min(95, (position.x / heroBounds.width) * 100));
+            const topPercent = Math.max(0, Math.min(95, (position.y / heroBounds.height) * 100));
 
-            // Set position immediately
+            // Set position with bounds checking
             card.style.left = `${leftPercent}%`;
             card.style.top = `${topPercent}%`;
+            card.style.position = 'absolute';
+            card.style.zIndex = '1';
             
             // Add staggered entrance animation
             setTimeout(() => {
                 card.style.opacity = '0';
-                card.style.transform = 'scale(0.5)';
+                card.style.transform = 'scale(0.3)';
                 
                 setTimeout(() => {
-                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'scale(0.8)';
                 }, 50);
-            }, index * 100);
+            }, index * 150);
+        });
+
+        // Hide cards that couldn't be positioned safely
+        [...this.cards].forEach(card => {
+            if (!positions.find(p => p.card === card)) {
+                card.style.display = 'none';
+                console.log('Hiding card that couldn\'t be positioned safely');
+            }
         });
     }
 

@@ -1,33 +1,30 @@
 /* Footer and Loading Component Styles */
 /* Footer layout, social links, and loading overlay */
 
-/* Footer */
+/* Modern Footer */
 .footer {
-    background: var(--text-primary);
-    color: white !important;
-    padding: var(--spacing-3xl) 0 var(--spacing-lg);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: var(--space-20) 0 var(--space-8);
+    border-top: 1px solid var(--border-light);
 }
 
 .footer-content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
+    gap: var(--space-8);
+    margin-bottom: var(--space-8);
 }
 
 .footer-section h4 {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    color: #1D1D1F !important;
-    background: rgba(255, 255, 255, 0.9);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--border-radius-sm);
-    display: inline-block;
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
 }
 
 .footer-section p {
-    color: #007AFF !important;
+    color: var(--text-secondary);
     line-height: 1.6;
     font-weight: 500;
 }
@@ -41,7 +38,7 @@
 }
 
 .footer-section ul li a {
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     text-decoration: none;
     transition: color var(--transition-fast);
     font-weight: 500;
@@ -65,7 +62,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     text-decoration: none;
     transition: all var(--transition-normal);
     font-size: 1.2rem;
@@ -73,11 +70,11 @@
 }
 
 .social-links a:hover {
-    background: #007AFF !important;
+    background: #8b5cf6 !important;
     color: white !important;
     transform: translateY(-2px);
-    border-color: #007AFF;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    border-color: #8b5cf6;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .footer-bottom {
@@ -87,12 +84,12 @@
 }
 
 .footer-bottom p {
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     font-weight: 500;
 }
 
 .footer-bottom span {
-    color: #007AFF !important;
+    color: #8b5cf6 !important;
     font-weight: 600;
 }
 

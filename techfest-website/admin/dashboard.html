@@ -193,6 +193,34 @@
                     </div>
 
                     <div class="form-section">
+                        <h3>Event Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="techfest-name" class="form-label">TechFest Name</label>
+                                <input type="text" id="techfest-name" name="techfestName" class="form-input" placeholder="e.g., TechCarvaan 2025">
+                            </div>
+                            <div class="form-group">
+                                <label for="techfest-theme" class="form-label">Theme</label>
+                                <input type="text" id="techfest-theme" name="techfestTheme" class="form-input" placeholder="e.g., Future Tech Revolution">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="event-dates" class="form-label">Event Dates</label>
+                                <input type="text" id="event-dates" name="eventDates" class="form-input" placeholder="e.g., March 15-20, 2025">
+                            </div>
+                            <div class="form-group">
+                                <label for="venue" class="form-label">Venue</label>
+                                <input type="text" id="venue" name="venue" class="form-input" placeholder="e.g., GCOEJ Campus, Jalgaon">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tagline" class="form-label">Tagline</label>
+                            <input type="text" id="tagline" name="tagline" class="form-input" placeholder="e.g., Innovation & Excellence">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
                         <h3>Statistics</h3>
                         <div class="form-row">
                             <div class="form-group">
@@ -207,6 +235,12 @@
                                 <label for="colleges-count-admin" class="form-label">Colleges Count</label>
                                 <input type="number" id="colleges-count-admin" name="collegesCount" class="form-input" placeholder="e.g., 50">
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="sync-stats-btn" class="btn btn-secondary" onclick="syncStatsToConfig()">
+                                <i class="fas fa-sync-alt"></i> Auto-Sync Stats from Actual Data
+                            </button>
+                            <small class="form-hint">Automatically updates counts based on actual events and coordinators in database</small>
                         </div>
                     </div>
 
@@ -266,15 +300,7 @@
                         </div>
                         <div class="filter-group">
                             <label for="events-category" class="form-label">Category</label>
-                            <select id="events-category" class="form-select">
-                                <option value="">All Categories</option>
-                                <option value="Programming">Programming</option>
-                                <option value="Web Development">Web Development</option>
-                                <option value="AI/ML">AI/ML</option>
-                                <option value="Design">Design</option>
-                                <option value="Security">Security</option>
-                                <option value="Game Development">Game Development</option>
-                            </select>
+                            <input id="events-category" class="form-input" type="text" placeholder="Filter by category (free text)">
                         </div>
                         <div class="filter-group">
                             <label for="events-status" class="form-label">Status</label>
@@ -358,16 +384,7 @@
                         </div>
                         <div class="form-group">
                             <label for="event-category" class="form-label">Category</label>
-                            <select id="event-category" name="category" class="form-select" required>
-                                <option value="Programming">Programming</option>
-                                <option value="Web Development">Web Development</option>
-                                <option value="AI/ML">AI/ML</option>
-                                <option value="Design">Design</option>
-                                <option value="Security">Security</option>
-                                <option value="Game Development">Game Development</option>
-                                <option value="Mobile Development">Mobile Development</option>
-                                <option value="Data Science">Data Science</option>
-                            </select>
+                            <input type="text" id="event-category" name="category" class="form-input" placeholder="e.g., Hackathon, Robotics, Open Theme" required>
                         </div>
                     </div>
                     
@@ -395,6 +412,12 @@
                     <div class="form-group">
                         <label for="event-registration-link" class="form-label">Registration Link</label>
                         <input type="url" id="event-registration-link" name="registrationLink" class="form-input" placeholder="https://forms.google.com/...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="event-participation-fee" class="form-label">Participation Fee</label>
+                        <input type="text" id="event-participation-fee" name="participationFee" class="form-input" placeholder="e.g., Free, ₹50 per person, ₹100 per team">
+                        <small class="form-hint">Specify participation fee (Free, amount per person/team)</small>
                     </div>
                     
                     <div class="form-group">
@@ -542,5 +565,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="../assets/js/firebase-config.js"></script>
     <script src="../assets/js/admin-dashboard.js"></script>
+    <!-- Mouse Trail Effect 
+    <script src="../assets/js/mouse-trail.js"></script> -->
 </body>
 </html>

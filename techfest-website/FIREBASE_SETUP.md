@@ -9,11 +9,13 @@ This project uses Firebase for backend services. For security reasons, the Fireb
 #### Setup Instructions:
 
 1. **Copy the template file:**
+
    ```bash
    cp assets/js/firebase-config.template.js assets/js/firebase-config.js
    ```
 
 2. **Create your Firebase project:**
+
    - Go to [Firebase Console](https://console.firebase.google.com/)
    - Create a new project or use an existing one
    - Enable Firestore Database
@@ -21,6 +23,7 @@ This project uses Firebase for backend services. For security reasons, the Fireb
    - Enable Storage (optional)
 
 3. **Get your Firebase configuration:**
+
    - In your Firebase project, go to Project Settings
    - Scroll down to "Your apps" section
    - Click on the web app icon or "Add app" if no web app exists
@@ -36,7 +39,7 @@ This project uses Firebase for backend services. For security reasons, the Fireb
      storageBucket: "your-project.firebasestorage.app",
      messagingSenderId: "123456789",
      appId: "your-app-id",
-     measurementId: "your-measurement-id"
+     measurementId: "your-measurement-id",
    };
    ```
 
@@ -54,12 +57,12 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null && request.auth.token.admin == true;
     }
-    
+
     // Registrations collection - authenticated users only
     match /registrations/{registrationId} {
       allow read, write: if request.auth != null;
     }
-    
+
     // Admin collection - admin users only
     match /admin/{document} {
       allow read, write: if request.auth != null && request.auth.token.admin == true;

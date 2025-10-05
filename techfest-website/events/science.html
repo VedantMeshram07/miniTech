@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hackathon 2025 - TechFest Science Event</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Use custom science event CSS -->
+  <link rel="stylesheet" href="../assets/css/science-event.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <a href="../index.html" style="color: white; text-decoration: none;">TechFest</a>
+      </div>
+      
+      <!-- Science Exhibition Mobile Logo (visible only on mobile) -->
+      <a href="science.html" class="science-exhibition-mobile" title="Science Exhibition">
+          <i class="fas fa-flask"></i>
+      </a>
+      
+      <div class="nav-controls">
+        <div class="nav-menu">
+          <a href="../index.html" class="nav-link">Home</a>
+          <a href="../index.html#events" class="nav-link">Events</a>
+          <a href="../index.html#about" class="nav-link">About</a>
+          <a href="../index.html#contact" class="nav-link">Contact</a>
+        </div>
+        
+        <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">
+          <i class="fas fa-moon"></i>
+        </button>
+        
+        <div class="nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Event Section -->
+  <section class="event-section">
+    <div class="event-poster">
+      <img src="../assets/images/event-poster.jpg" alt="Event Poster">
+      <h1 class="event-title">Hackathon 2025</h1>
+    </div>
+    <div class="event-description">
+      <p>
+        Hackathon 2025 is a 24-hour coding marathon that challenges teams to build innovative tech solutions to real-world problems. 
+        Participants will brainstorm, prototype, and present their projects to a panel of judges from the tech industry. 
+        Exciting prizes and internship opportunities await the winners!
+      </p>
+    </div>
+  </section>
+
+  <!-- Details + Rules -->
+  <section class="event-details-grid">
+    <div class="event-cards">
+      <div class="event-card">
+        <i class="fas fa-trophy"></i>
+        <div class="card-text">Prize Pool: ₹30,000</div>
+      </div>
+      <div class="event-card">
+        <i class="fas fa-calendar"></i>
+        <div class="card-text">Date: 14th–15th October 2025</div>
+      </div>
+      <div class="event-card">
+        <i class="fas fa-user-friends"></i>
+        <div class="card-text">Team Size: 2–4 members</div>
+      </div>
+      <div class="event-card">
+        <i class="fas fa-map-marker-alt"></i>
+        <div class="card-text">Venue: Main Computer Lab</div>
+      </div>
+    </div>
+
+    <div class="event-rules">
+      <h2><i class="fas fa-list-check"></i> Rules & Guidelines</h2>
+      <ul>
+        <li>Each team must consist of 2 to 4 members.</li>
+        <li>Projects must be completed within the given 24-hour period.</li>
+        <li>Use of AI and open-source tools is encouraged.</li>
+        <li>Judging will be based on innovation, impact, and technical quality.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Registration + Coordinators -->
+  <section class="event-footer-grid">
+    <div>
+      <button class="register-btn" onclick="window.open('https://forms.gle/exampleFormLink', '_blank')">
+        <i class="fas fa-user-plus"></i> Register Now
+      </button>
+    </div>
+    <div class="coordinators">
+      <h3>Event Coordinators</h3>
+      <div class="coordinator-item">John Doe - +91 9876543210</div>
+      <div class="coordinator-item">Jane Smith - +91 9123456789</div>
+    </div>
+  </section>
+
+  <!-- Firebase Config (kept from original) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="../assets/js/firebase-config.js"></script> 
+  <script src="../assets/js/science-details.js"></script>
+  <!-- Mouse Trail Effect -->
+  <script src="../assets/js/mouse-trail.js"></script>
+  <!-- Universal Theme Toggle -->
+  <script src="../assets/js/theme-toggle.js"></script>
+</body>
+</html>

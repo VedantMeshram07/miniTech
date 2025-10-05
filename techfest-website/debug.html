@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        #results {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase Debug Tool</h1>
+        <p>This page will help diagnose Firebase connectivity and data issues.</p>
+        
+        <div class="status info">
+            <strong>Status:</strong> <span id="status">Initializing...</span>
+        </div>
+        
+        <button onclick="runDiagnostics()">Run Full Diagnostics</button>
+        <button onclick="testAuth()">Test Authentication</button>
+        <button onclick="testFirestore()">Test Firestore</button>
+        <button onclick="clearCache()">Clear Cache</button>
+        <button onclick="createSampleEvent()">Create Sample Event</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="../assets/js/firebase-config.js"></script>
+    
+    <script>
+        let results = document.getElementById('results');
+        let status = document.getElementById('status');
+        
+        function log(message) {
+            results.textContent += new Date().toLocaleTimeString() + ' - ' + message + '\n';
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function updateStatus(msg, type = 'info') {
+            status.textContent = msg;
+            status.parentElement.className = `status ${type}`;
+        }
+        
+        async function runDiagnostics() {
+            results.textContent = '';
+            log('🚀 Starting Firebase diagnostics...');
+            
+            // Check Firebase initialization
+            if (window.firebase) {
+                log('✅ Firebase SDK loaded');
+            } else {
+                log('❌ Firebase SDK not loaded');
+                return;
+            }
+            
+            if (window.db) {
+                log('✅ Firestore initialized');
+            } else {
+                log('❌ Firestore not initialized');
+            }
+            
+            if (window.auth) {
+                log('✅ Auth initialized');
+            } else {
+                log('❌ Auth not initialized');
+            }
+            
+            // Check authentication status
+            const user = firebase.auth().currentUser;
+            if (user) {
+                log(`✅ User authenticated: ${user.email}`);
+            } else {
+                log('ℹ️ No user authenticated');
+            }
+            
+            // Test Firestore
+            await testFirestoreData();
+            
+            updateStatus('Diagnostics completed', 'success');
+        }
+        
+        async function testFirestoreData() {
+            if (!window.db) {
+                log('❌ Cannot test Firestore - not initialized');
+                return;
+            }
+            
+            try {
+                log('🔍 Testing Firestore data access...');
+                
+                // Test events collection
+                const eventsRef = window.db.collection('events');
+                const snapshot = await eventsRef.get();
+                
+                log(`📊 Events collection has ${snapshot.size} documents`);
+                
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        log(`📄 Event: ${doc.id} - ${data.title || 'No title'}`);
+                    });
+                } else {
+                    log('⚠️ No events found in Firestore database');
+                    log('💡 This explains why the details page shows fallback data');
+                }
+                
+                // Test cache
+                const cachedSnapshot = await eventsRef.get({ source: 'cache' });
+                log(`💾 Cached events: ${cachedSnapshot.size} documents`);
+                
+            } catch (error) {
+                log(`❌ Firestore test failed: ${error.message}`);
+                if (error.code) {
+                    log(`📋 Error code: ${error.code}`);
+                }
+            }
+        }
+        
+        async function testAuth() {
+            results.textContent = '';
+            log('🔐 Testing authentication...');
+            
+            const user = firebase.auth().currentUser;
+            if (user) {
+                log(`✅ Current user: ${user.email}`);
+                log(`📝 User ID: ${user.uid}`);
+                log(`🔏 Email verified: ${user.emailVerified}`);
+            } else {
+                log('ℹ️ No user currently signed in');
+            }
+        }
+        
+        async function testFirestore() {
+            results.textContent = '';
+            await testFirestoreData();
+        }
+        
+        async function clearCache() {
+            results.textContent = '';
+            log('🗑️ Clearing cache...');
+            
+            try {
+                if (window.db) {
+                    await window.db.clearPersistence();
+                    log('✅ Firestore cache cleared');
+                } else {
+                    log('❌ Cannot clear cache - Firestore not initialized');
+                }
+            } catch (error) {
+                log(`❌ Failed to clear cache: ${error.message}`);
+            }
+        }
+        
+        async function createSampleEvent() {
+            results.textContent = '';
+            log('🎯 Creating sample event...');
+            
+            if (!window.dbManager) {
+                log('❌ DatabaseManager not available');
+                return;
+            }
+            
+            const sampleEvent = {
+                id: 'test-event-' + Date.now(),
+                title: 'Sample Tech Event',
+                shortDescription: 'A sample event for testing',
+                description: 'This is a detailed description of the sample event.',
+                date: '2025-01-15',
+                prize: '₹10,000',
+                category: 'Technology',
+                rules: ['Rule 1: Test rule', 'Rule 2: Another test rule'],
+                contacts: [
+                    { name: 'Test Coordinator', phone: '9876543210', email: 'test@example.com' }
+                ]
+            };
+            
+            try {
+                await window.dbManager.upsertEvent(sampleEvent.id, sampleEvent);
+                log(`✅ Sample event created: ${sampleEvent.id}`);
+                log('💡 Try refreshing the details page now');
+            } catch (error) {
+                log(`❌ Failed to create sample event: ${error.message}`);
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (window.firebase && window.db) {
+                    updateStatus('Firebase ready', 'success');
+                    log('🎉 Firebase initialized successfully');
+                } else {
+                    updateStatus('Firebase initialization failed', 'error');
+                    log('❌ Firebase failed to initialize');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

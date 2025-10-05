@@ -1,5 +1,45 @@
 /* Animations and Keyframes Component */
-/* All animation keyframes and interactive effects for the website */
+/* Modern animation keyframes and interactive effects inspired by Linear & Stripe */
+
+/* Modern Floating Animations */
+@keyframes modernFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-15px) rotate(-1deg);
+    }
+}
+
+@keyframes subtleGlow {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px var(--glow-primary),
+            0 0 40px var(--glow-primary);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px var(--glow-accent),
+            0 0 60px var(--glow-accent);
+    }
+}
+
+@keyframes modernPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
 
 /* Interactive Animations */
 @keyframes ripple {

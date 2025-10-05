@@ -57,6 +57,8 @@ try {
         db.enablePersistence({ synchronizeTabs: true })
             .then(() => {
                 console.log('✅ Firestore offline persistence enabled');
+                // Test if we can actually read from Firestore
+                testFirestoreConnection();
             })
             .catch((err) => {
                 if (err.code == 'failed-precondition') {
@@ -66,6 +68,8 @@ try {
                 } else {
                     console.warn('⚠️ Firestore offline persistence failed:', err);
                 }
+                // Still test connection even if persistence fails
+                testFirestoreConnection();
             });
             
     } else {
@@ -80,6 +84,48 @@ try {
     window.db = null;
     window.auth = null;
     window.storage = null;
+}
+
+// Test Firestore connection and data availability
+async function testFirestoreConnection() {
+    if (!window.db) {
+        console.error('🚫 No Firestore database instance available');
+        return;
+    }
+
+    try {
+        console.log('🧪 Testing Firestore connection...');
+        
+        // Test 1: Try to read events collection
+        const eventsSnapshot = await window.db.collection('events').limit(1).get();
+        console.log(`📊 Events collection status: ${eventsSnapshot.empty ? 'EMPTY' : `${eventsSnapshot.size} documents found`}`);
+        
+        if (!eventsSnapshot.empty) {
+            eventsSnapshot.forEach(doc => {
+                console.log('📄 Sample event data:', { id: doc.id, ...doc.data() });
+            });
+        } else {
+            console.warn('⚠️ No events found in Firestore - this might explain why data isn\'t loading');
+        }
+        
+        // Test 2: Try to read from cache (offline)
+        const cachedSnapshot = await window.db.collection('events').get({ source: 'cache' });
+        console.log(`💾 Cached events: ${cachedSnapshot.empty ? 'EMPTY' : `${cachedSnapshot.size} documents`}`);
+        
+        // Test 3: Try to read from server (online)
+        const serverSnapshot = await window.db.collection('events').get({ source: 'server' });
+        console.log(`🌐 Server events: ${serverSnapshot.empty ? 'EMPTY' : `${serverSnapshot.size} documents`}`);
+        
+        console.log('✅ Firestore connection test completed');
+        
+    } catch (error) {
+        console.error('❌ Firestore connection test failed:', error);
+        if (error.code === 'permission-denied') {
+            console.error('🔒 Permission denied - check Firestore security rules');
+        } else if (error.code === 'unavailable') {
+            console.error('🔌 Firestore unavailable - check internet connection');
+        }
+    }
 }
 
 // Database structure and helper functions
@@ -104,11 +150,39 @@ class DatabaseManager {
     async updateSiteConfig(config) {
         if (!this.db) throw new Error('Database not available');
         
+        console.log('🔥 FIREBASE: updateSiteConfig called with:', config);
+        console.log('🔥 FIREBASE: Config fields to save:', Object.keys(config));
+        console.log('🔥 FIREBASE: Config values sample:', {
+            title: config.title,
+            eventName: config.eventName,
+            siteName: config.siteName,
+            techfestName: config.techfestName,
+            heroTitle: config.heroTitle
+        });
+        
         try {
+            console.log('🔥 FIREBASE: Calling Firestore set() with merge: true...');
             await this.db.collection('siteConfig').doc('main').set(config, { merge: true });
+            console.log('✅ FIREBASE: Successfully saved to siteConfig/main');
+            
+            // Immediate verification
+            try {
+                console.log('🔍 FIREBASE: Verifying save by reading back...');
+                const verifyDoc = await this.db.collection('siteConfig').doc('main').get();
+                if (verifyDoc.exists) {
+                    const savedData = verifyDoc.data();
+                    console.log('✅ FIREBASE: Verification successful - saved data:', savedData);
+                    console.log('✅ FIREBASE: Verification - saved fields:', Object.keys(savedData));
+                } else {
+                    console.error('❌ FIREBASE: Verification failed - document does not exist');
+                }
+            } catch (verifyError) {
+                console.error('❌ FIREBASE: Verification error:', verifyError);
+            }
+            
             return true;
         } catch (error) {
-            console.error('Error updating site config:', error);
+            console.error('❌ FIREBASE: Error updating site config:', error);
             throw error;
         }
     }
@@ -173,14 +247,60 @@ class DatabaseManager {
         if (!this.db) throw new Error('Database not available');
         
         try {
-            await this.db.collection('events').doc(eventId).update({
-                ...eventData,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            // First check if document exists
+            const docRef = this.db.collection('events').doc(eventId);
+            const docSnap = await docRef.get();
+            
+            if (docSnap.exists) {
+                // Document exists, update it
+                await docRef.update({
+                    ...eventData,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                // Document doesn't exist, create it with set
+                await docRef.set({
+                    ...eventData,
+                    id: eventId,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
             return true;
         } catch (error) {
             console.error('Error updating event:', error);
             throw error;
+        }
+    }
+    
+    async upsertEvent(eventId, eventData) {
+        if (!this.db) throw new Error('Database not available');
+        
+        try {
+            console.log(`🔄 Upserting event: ${eventId}`);
+            // Use set with merge option - creates if doesn't exist, updates if exists
+            await this.db.collection('events').doc(eventId).set({
+                ...eventData,
+                id: eventId,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            console.log(`✅ Event upserted successfully: ${eventId}`);
+            return true;
+        } catch (error) {
+            console.error('Error upserting event:', error);
+            throw error;
+        }
+    }
+    
+    async eventExists(eventId) {
+        if (!this.db) throw new Error('Database not available');
+        
+        try {
+            const docSnap = await this.db.collection('events').doc(eventId).get();
+            return docSnap.exists;
+        } catch (error) {
+            console.error('Error checking event existence:', error);
+            return false;
         }
     }
     

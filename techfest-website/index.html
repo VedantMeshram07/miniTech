@@ -3,31 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="site-title">TechFest 2025</title>
+    <title id="site-title">Techfest 2025</title>
     <link rel="stylesheet" href="assets/css/style-new.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Critical Mobile CSS for About Section -->
+    <style>
+        /* Desktop layout */
+        @media (min-width: 769px) {
+            .about-content {
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-areas: 
+                    "title-text visual"
+                    "description visual" !important;
+            }
+            
+            .about-title-section {
+                grid-area: title-text !important;
+            }
+            
+            .about-visual {
+                grid-area: visual !important;
+                grid-row: 1 / -1 !important;
+            }
+            
+            .about-text {
+                grid-area: description !important;
+            }
+        }
+        
+        /* Mobile layout */
+        @media (max-width: 768px) {
+            .about-content {
+                grid-template-columns: 1fr !important;
+                gap: var(--spacing-xl) !important;
+                display: grid !important;
+            }
+            
+            .about-title-section {
+                order: 1 !important;
+            }
+            
+            .about-visual {
+                order: 2 !important;
+            }
+            
+            .about-text {
+                order: 3 !important;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Firebase Status Display (Temporary for debugging) -->
+    <div id="firebase-status" style="position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; z-index: 9999; font-size: 12px; max-width: 300px;">
+        <div>🔧 Checking Firebase...</div>
+        <div id="firebase-details"></div>
+    </div>
+    
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <span id="nav-typography-name">TechCarvaan 2025</span>
+                <span id="nav-typography-name">TehcFest 2025</span>
             </div>
-            <div class="nav-menu">
-                <a href="#home" class="nav-link">Home</a>
-                <a href="#events" class="nav-link">Events</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#contact" class="nav-link">Contact</a>
-                <a href="admin/login.html" class="nav-link admin-link" style="display: none;">Admin</a>
-            </div>
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            
+            <!-- Science Exhibition Mobile Logo (visible only on mobile) -->
+            <a href="events/science.html" class="science-exhibition-mobile" title="Science Exhibition">
+                <i class="fas fa-flask"></i>
+            </a>
+            
+            <div class="nav-controls">
+                <div class="nav-menu">
+                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#events" class="nav-link">Events</a>
+                    <a href="events/science.html" class="nav-link science-exhibition-link">Science Exhibition</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="admin/login.html" class="nav-link admin-link" style="display: none;">Admin</a>
+                </div>
+                
+               <!-- <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>--->
+                
+                <div class="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -37,8 +104,24 @@
         <div class="hero-container">
             <!-- Organization Header with Logos -->
             <div class="organization-header">
-                <!-- College Logo (Left) -->
-                <div class="header-logo header-logo-left">
+                <!-- Mobile Logos Container (visible only on mobile) -->
+                <div class="mobile-logos-container">
+                    <div class="header-logo header-logo-left">
+                        <img src="assets/images/college-logo.png" alt="GCOEJ Logo" class="college-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="logo-placeholder college-logo" style="display: none;">
+                            <i class="fas fa-university"></i>
+                        </div>
+                    </div>
+                    <div class="header-logo header-logo-right">
+                        <img src="assets/images/event-logo.png" alt="TechCarvaan Logo" class="event-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="logo-placeholder event-logo" style="display: none;">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Logos (hidden on mobile) -->
+                <div class="header-logo header-logo-left desktop-logo">
                     <img src="assets/images/college-logo.png" alt="GCOEJ Logo" class="college-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="logo-placeholder college-logo" style="display: none;">
                         <i class="fas fa-university"></i>
@@ -49,11 +132,10 @@
                 <div class="organization-content">
                     <span class="college-small">GCOEJ's</span>
                     <h1 class="organization-name">Technical Council</h1>
-                    <span class="presents-text">presents</span>
+                    <span class="presents-text" style="font-size: 18px;">presents</span>
                 </div>
 
-                <!-- Event Logo (Right) -->
-                <div class="header-logo header-logo-right">
+                <div class="header-logo header-logo-right desktop-logo">
                     <img src="assets/images/event-logo.png" alt="TechCarvaan Logo" class="event-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="logo-placeholder event-logo" style="display: none;">
                         <i class="fas fa-rocket"></i>
@@ -64,7 +146,7 @@
             <!-- Main Hero Content -->
             <div class="hero-main-content">
                 <div class="hero-event">
-                    <h2 id="hero-title-main" class="event-title gradient-text">TechCarvaan 2025</h2>
+                    <h2 id="hero-title-main" class="event-title gradient-text" style="color: rgb(255, 255, 255);">TechFest 2025</h2>
                     <span id="hero-theme" class="event-theme">Future Tech Revolution</span>
                     <div class="hero-badge">
                         <i class="fas fa-bolt"></i>
@@ -83,7 +165,7 @@
                         <i class="fas fa-calendar-alt"></i>
                         <div class="detail-content">
                             <span class="detail-label">Event Dates</span>
-                            <span id="hero-dates" class="detail-value">March 15-20, 2025</span>
+                            <span id="hero-dates" class="detail-value">November 14, 2025</span>
                         </div>
                     </div>
                     <div class="detail-item">
@@ -95,30 +177,27 @@
                     </div>
                 </div>
 
-                <div class="hero-stats">
-                    <div class="stat">
-                        <span id="events-count" class="stat-number">0+</span>
-                        <span class="stat-label">Events</span>
-                    </div>
-                    <div class="stat">
-                        <span id="participants-count" class="stat-number">0+</span>
-                        <span class="stat-label">Participants</span>
-                    </div>
-                    <div class="stat">
-                        <span id="colleges-count" class="stat-number">0+</span>
-                        <span class="stat-label">Colleges</span>
-                    </div>
-                </div>
-
                 <div class="hero-buttons">
-                    <button class="btn btn-primary btn-large" onclick="scrollToFeaturedEvents()">
-                        <i class="fas fa-rocket"></i>
-                        <span>Register Now</span>
-                    </button>
                     <button class="btn btn-secondary btn-large" onclick="window.location.href='events/details.html'">
                         <i class="fas fa-calendar"></i>
                         <span>View Events</span>
                     </button>
+                </div>
+
+                <!-- Hero Stats -->
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span id="events-count" class="stat-number">12+</span>
+                        <span class="stat-label">Events</span>
+                    </div>
+                    <div class="stat">
+                        <span id="participants-count" class="stat-number">400+</span>
+                        <span class="stat-label">Participants</span>
+                    </div>
+                    <!-- <div class="stat">
+                        <span id="colleges-count" class="stat-number">0+</span>
+                        <span class="stat-label">Colleges</span>
+                    </div> -->
                 </div>
             </div>
 
@@ -159,8 +238,8 @@
                 <div class="hero-circle circle-3"></div>
                 <div class="hero-circle circle-4"></div>
                 <div class="hero-circle circle-5"></div>
-                <div class="hero-background-pattern"></div>
-            </div>
+                <div class="hero-circle circle-4"></div>
+                <div class="hero-circle circle-2"></div>
         </div>
     </section>
 
@@ -201,13 +280,16 @@
         </div>
     </section>
 
+    
+
     <!-- About Section -->
     <section id="about" class="about-section">
         <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2 id="about-title">About TechFest</h2>
-                    <p id="about-description">
+            <div class="about-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-3xl); align-items: center;">
+                <!-- Combined Title and Description (shows first on mobile) -->
+                <div class="about-title-section">
+                    <h2 id="about-title" style="margin-bottom: var(--spacing-md);">About TechFest</h2>
+                    <p id="about-description" style="margin-bottom: var(--spacing-lg);">
                         Our annual technology festival brings together the brightest minds to compete, collaborate, and celebrate innovation. 
                         Join us for an unforgettable experience filled with cutting-edge competitions, workshops, and networking opportunities.
                     </p>
@@ -235,10 +317,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="about-visual">
-                    <div class="about-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-laptop-code"></i>
+                
+                <!-- Poster (shows second on mobile) -->
+                <div class="about-visual" style="position: relative;">
+                    <div class="about-image banner-container">
+                        <div class="banner-frame ratio-5x4">
+                            <img src="assets/images/event-banner.jpg" alt="Event Banner" 
+                                 onerror="this.onerror=null; this.src='assets/images/placeholder-banner.svg';">
                         </div>
                     </div>
                 </div>
@@ -277,6 +362,33 @@
                         </div>
                     </div>
                 </div>
+                <!-- Faculty Coordinators Section -->
+                <div class="faculty-coordinators">
+                    <h3>Faculty Coordinators</h3>
+                    <div class="coordinators-grid">
+                        <div class="coordinator-card faculty-card">
+                            <div class="coordinator-avatar">
+                                <img class="coordinator-photo" src="assets/images/faculty/faculty-1.jpg" alt="Faculty Incharge 1" 
+                                     onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span class="initials">FI</span>
+                            </div>
+                            <h4>Faculty Incharge 1</h4>
+                            <p class="role">Faculty Incharge</p>
+                        </div>
+                        <div class="coordinator-card faculty-card">
+                            <div class="coordinator-avatar">
+                                <img class="coordinator-photo" src="assets/images/faculty/faculty-2.jpg" alt="Faculty Incharge 2" 
+                                     onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span class="initials">FI</span>
+                            </div>
+                            <h4>Faculty Incharge 2</h4>
+                            <p class="role">Faculty Incharge</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="coordinators">
                     <h3>Event Coordinators</h3>
                     <div id="coordinators-list" class="coordinators-grid">
@@ -340,5 +452,20 @@
     
     <!-- Card Positioning (Legacy - to be modularized) -->
     <script src="assets/js/card-positioning.js"></script>
+    
+    <!-- Dynamic Card Colors -->
+    <script src="assets/js/dynamic-card-colors.js"></script>
+    
+    <!-- Event Card Glow Animation -->
+    <script src="assets/js/event-card-glow.js"></script>
+    
+    <!-- Random Blur Effect for TechFest Title -->
+    <script src="assets/js/random-blur-effect.js"></script>
+    
+    <!-- Mouse Trail Effect -->
+    <script src="assets/js/mouse-trail.js"></script>
+    
+    <!-- Theme Toggle 
+    <script src="assets/js/theme-toggle.js"></script>-->
 </body>
 </html>

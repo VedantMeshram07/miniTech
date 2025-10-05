@@ -1,21 +1,19 @@
 // Event Details Page JavaScript
-console.log('📄 Event details JavaScript loaded');
 
 let currentEvent = null;
 let relatedEvents = [];
 
 // Wait for Firebase to be initialized
-async function waitForFirebase(timeout = 3000) {
+async function waitForFirebase(timeout = 5000) {
     return new Promise((resolve) => {
         const startTime = Date.now();
         
         const checkFirebase = () => {
-            if (window.db && window.auth) {
-                console.log('✅ Firebase is ready for event details');
-                resolve();
+            // Check for both Firebase core and our DatabaseManager
+            if (window.firebase && window.db && window.auth && window.dbManager) {
+                resolve(true);
             } else if (Date.now() - startTime > timeout) {
-                console.log('⚠️ Firebase timeout in event details, proceeding without it');
-                resolve();
+                resolve(false);
             } else {
                 setTimeout(checkFirebase, 100);
             }
@@ -27,28 +25,30 @@ async function waitForFirebase(timeout = 3000) {
 
 // Initialize the page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📋 DOM Content Loaded - starting initialization');
+    // Initialize theme before rendering
+        try {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        } catch (_) {}
     initializeEventDetails();
 });
 
 // Initialize event details page
 async function initializeEventDetails() {
-    console.log('🚀 Initializing event details page...');
     showLoading();
     
     try {
         // Get event ID from URL or localStorage
         const eventId = getEventIdFromUrl() || getEventIdFromStorage();
-        console.log('Event ID:', eventId);
         
         if (!eventId) {
             throw new Error('No event ID provided. Please access this page through the events list.');
         }
         
         // Wait for Firebase to be ready (if available)
-        if (typeof waitForFirebase === 'function') {
-            await waitForFirebase(3000);
-        }
+        await waitForFirebase(5000);
         
         // Load event data
         await loadEventDetails(eventId);
@@ -58,9 +58,7 @@ async function initializeEventDetails() {
         initializeNavigation();
         
         hideLoading();
-        console.log('✅ Event details page initialized successfully');
     } catch (error) {
-        console.error('❌ Error initializing event details:', error);
         hideLoading();
         
         // Show more specific error messages
@@ -71,10 +69,8 @@ async function initializeEventDetails() {
             errorMsg = 'The requested event could not be found.';
         }
         
-        showErrorMessage(`${errorMsg} Redirecting to events page...`);
-        setTimeout(() => {
-            window.location.href = '../index.html#events';
-        }, 4000);
+        // Show error but do not auto-redirect; let user navigate back manually
+        showErrorMessage(errorMsg);
     }
 }
 
@@ -86,62 +82,122 @@ function getEventIdFromUrl() {
 
 // Get event ID from localStorage (fallback)
 function getEventIdFromStorage() {
+    // Prefer sessionStorage event id (set by landing page)
+    const sessionId = sessionStorage.getItem('selectedEventId');
+    if (sessionId) return sessionId;
+    // Backward compatibility: localStorage selectedEvent object
     const storedEvent = localStorage.getItem('selectedEvent');
     if (storedEvent) {
-        const event = JSON.parse(storedEvent);
-        return event.id;
+        try {
+            const event = JSON.parse(storedEvent);
+            return event.id;
+        } catch {}
     }
     return null;
+}
+
+// Normalize event schema to what UI expects
+function normalizeEvent(raw) {
+    if (!raw) return null;
+    const rules = Array.isArray(raw.rules)
+        ? raw.rules
+        : (typeof raw.rules === 'string' ? raw.rules.split(/\r?\n/).filter(Boolean) : []);
+    const contacts = Array.isArray(raw.contacts) ? raw.contacts : [];
+    return {
+        id: raw.id || raw.eventId || raw.uid || '',
+        title: raw.title || raw.name || raw.eventName || 'Untitled Event',
+        shortDescription: raw.shortDescription || raw.subtitle || raw.tagline || raw.description || '',
+        description: raw.description || raw.longDescription || raw.details || '',
+        prize: raw.prize || raw.prizePool || raw.reward || '',
+        date: raw.date || raw.eventDate || raw.schedule || 'TBD',
+        category: raw.category || raw.type || raw.track || 'Technology',
+        participationFee: raw.participationFee || raw.fee || 'Free',
+        teamRequirements: raw.teamRequirements || raw.teamSize || 'Individual',
+        registrationLink: raw.registrationLink || raw.registerUrl || '',
+        active: raw.active !== false,
+        rules,
+        contacts,
+        image: raw.image || raw.imageUrl || raw.banner || ''
+    };
 }
 
 // Load event details
 async function loadEventDetails(eventId) {
     try {
-        console.log('🔍 Loading event details for ID:', eventId);
-        console.log('📦 localStorage contents:', localStorage.getItem('selectedEvent'));
+        console.log('Event ID:', eventId);
         
-        // Try to load from localStorage first (most reliable)
-        const storedEvent = localStorage.getItem('selectedEvent');
-        if (storedEvent) {
+        // First try to load fresh data from Firestore (preferred)
+        // Prefer DatabaseManager if available
+        if (window.dbManager && window.dbManager.getEvent) {
             try {
-                currentEvent = JSON.parse(storedEvent);
-                console.log('✅ Event loaded from localStorage:', currentEvent.title);
-                console.log('📄 Full event data:', currentEvent);
+                const doc = await window.dbManager.getEvent(eventId);
+                if (doc) {
+                    currentEvent = normalizeEvent({ id: doc.id, ...doc });
+                }
             } catch (e) {
-                console.warn('❌ Failed to parse stored event:', e);
+                // Silent fallback
             }
-        } else {
-            console.log('⚠️ No event in localStorage');
         }
-        
-        // Try to load from database if available
+
+        // Try to load from database if available and not found yet
         if (!currentEvent && window.db) {
             try {
                 const doc = await window.db.collection('events').doc(eventId).get();
                 if (doc.exists) {
-                    currentEvent = { id: doc.id, ...doc.data() };
-                    console.log('✅ Event loaded from database:', currentEvent.title);
+                    currentEvent = normalizeEvent({ id: doc.id, ...doc.data() });
                 }
             } catch (e) {
-                console.warn('Failed to load from database:', e);
+                // Silent fallback
             }
         }
         
+        // As a fallback, attempt to fetch all events and find by id (or similar)
+        if (!currentEvent && window.dbManager && window.dbManager.getEvents) {
+            try {
+                const all = await window.dbManager.getEvents(false);
+                
+                if (all && all.length > 0) {
+                    // Try exact match first
+                    let match = all.find(ev => ev.id === eventId);
+                    
+                    // If no exact match, try case-insensitive
+                    if (!match) {
+                        match = all.find(ev => ev.id.toLowerCase() === eventId.toLowerCase());
+                    }
+                    
+                    // If still no match, try partial match
+                    if (!match) {
+                        match = all.find(ev => ev.id.includes(eventId) || eventId.includes(ev.id));
+                    }
+                    
+                    if (match) {
+                        currentEvent = normalizeEvent(match);
+                    }
+                }
+            } catch (e) {
+                // Silent fallback
+            }
+        }
+
+        // Try localStorage as fallback if Firestore didn't work
+        if (!currentEvent) {
+            const storedEvent = localStorage.getItem('selectedEvent');
+            if (storedEvent) {
+                try {
+                    currentEvent = normalizeEvent(JSON.parse(storedEvent));
+                } catch (e) {
+                    // Silent fallback
+                }
+            }
+        }
+
         // Fallback to default events if still not found
         if (!currentEvent) {
-            console.log('🔄 Falling back to default events');
             const defaultEvents = getDefaultEvents();
-            console.log('📋 Available default events:', defaultEvents.map(e => e.id));
-            currentEvent = defaultEvents.find(event => event.id === eventId);
-            if (currentEvent) {
-                console.log('✅ Event loaded from defaults:', currentEvent.title);
-            } else {
-                console.log('❌ Event not found in defaults either');
-            }
+            currentEvent = normalizeEvent(defaultEvents.find(event => event.id === eventId));
         }
         
         if (!currentEvent) {
-            console.error(`💥 Event with ID '${eventId}' not found anywhere`);
             throw new Error(`Event with ID '${eventId}' not found`);
         }
         
@@ -173,13 +229,25 @@ function renderEventDetails() {
 }
 
 function updateEventHeader() {
-    // Event image
+    // Event poster image (hardcoded posters path based on event ID)
     const eventImage = document.getElementById('event-image');
-    if (currentEvent.image) {
-        eventImage.innerHTML = `<img src="${currentEvent.image}" alt="${currentEvent.title}" loading="lazy">`;
-    } else {
-        const icon = getEventIcon(currentEvent.category);
-        eventImage.innerHTML = `<i class="fas fa-${icon}"></i>`;
+    if (eventImage) {
+        eventImage.classList.add('a4-poster');
+        const posterPath = currentEvent && currentEvent.id ? `../assets/posters/poster-${currentEvent.id}.jpg` : '../assets/posters/placeholder-poster.svg';
+        const alt = currentEvent && currentEvent.title ? currentEvent.title : 'Event Poster';
+        eventImage.innerHTML = `<img src="${posterPath}" alt="${alt}" loading="lazy" onerror="this.onerror=null;this.src='../assets/posters/placeholder-poster.svg';">`;
+
+        // Add caption (event title) below the poster if not already present
+        const container = eventImage.parentElement; // .event-image-container
+        if (container && !container.querySelector('.event-poster-title')) {
+            const caption = document.createElement('div');
+            caption.className = 'event-poster-title';
+            caption.textContent = currentEvent && currentEvent.title ? currentEvent.title : '';
+            container.appendChild(caption);
+        } else if (container) {
+            const caption = container.querySelector('.event-poster-title');
+            if (caption) caption.textContent = currentEvent && currentEvent.title ? currentEvent.title : '';
+        }
     }
     
     // Event category
@@ -194,19 +262,8 @@ function updateEventHeader() {
     document.getElementById('event-prize-amount').textContent = currentEvent.prize || '₹0';
     document.getElementById('event-date-value').textContent = currentEvent.date || 'TBD';
     
-    // Determine participation type from rules
-    let participationType = 'Individual';
-    if (currentEvent.rules) {
-        const teamRule = currentEvent.rules.find(rule => rule.toLowerCase().includes('team'));
-        if (teamRule) {
-            if (teamRule.toLowerCase().includes('2-4')) {
-                participationType = 'Team (2-4)';
-            } else if (teamRule.toLowerCase().includes('team')) {
-                participationType = 'Team';
-            }
-        }
-    }
-    document.getElementById('event-participation-type').textContent = participationType;
+    // Use participation fee from admin panel
+    document.getElementById('event-participation-type').textContent = currentEvent.participationFee || 'Free';
     
     // Team requirements
     const teamRequirementsElement = document.getElementById('event-team-requirements');
@@ -219,7 +276,24 @@ function updateEventContent() {
     // Detailed description
     const descriptionElement = document.getElementById('event-description-detailed');
     if (descriptionElement) {
-        descriptionElement.textContent = currentEvent.description || 'Description not available.';
+        const text = currentEvent.description || 'Description not available.';
+        descriptionElement.textContent = text;
+        const parent = descriptionElement.closest('.content-section');
+        if (parent) {
+            parent.classList.remove('is-short', 'is-medium', 'is-long', 'is-very-long', 'is-empty');
+            const len = text.length;
+            if (len === 0 || text === 'Description not available.') {
+                parent.classList.add('is-empty');
+            } else if (len <= 200) {
+                parent.classList.add('is-short');
+            } else if (len <= 600) {
+                parent.classList.add('is-medium');
+            } else if (len <= 1200) {
+                parent.classList.add('is-long');
+            } else {
+                parent.classList.add('is-very-long');
+            }
+        }
     }
     
     // Rules
@@ -233,8 +307,30 @@ function updateEventContent() {
         });
         rulesElement.innerHTML = '';
         rulesElement.appendChild(rulesList);
+        const parent = rulesElement.closest('.content-section');
+        if (parent) {
+            parent.classList.remove('is-short', 'is-medium', 'is-long', 'is-very-long', 'is-empty');
+            const len = currentEvent.rules.join(' ').length;
+            const ruleCount = currentEvent.rules.length;
+            if (ruleCount === 0) {
+                parent.classList.add('is-empty');
+            } else if (ruleCount <= 2 && len <= 200) {
+                parent.classList.add('is-short');
+            } else if (ruleCount <= 5 && len <= 600) {
+                parent.classList.add('is-medium');
+            } else if (len <= 1000) {
+                parent.classList.add('is-long');
+            } else {
+                parent.classList.add('is-very-long');
+            }
+        }
     } else if (rulesElement) {
         rulesElement.innerHTML = '<p>Rules will be announced soon.</p>';
+        const parent = rulesElement.closest('.content-section');
+        if (parent) {
+            parent.classList.remove('is-short', 'is-medium', 'is-long', 'is-very-long', 'is-empty');
+            parent.classList.add('is-short');
+        }
     }
 }
 
@@ -261,52 +357,21 @@ function updateSidebar() {
 
 // Load related events
 async function loadRelatedEvents(currentEventId) {
+    // Disable related events for now to keep page focused and avoid empty states
     try {
-        let allEvents = [];
-        
-        // Try to load from database
-        if (window.dbManager && window.dbManager.db) {
-            allEvents = await window.dbManager.getEvents(true);
-        } else {
-            allEvents = getDefaultEvents();
-        }
-        
-        // Filter out current event and get random related events
-        relatedEvents = allEvents
-            .filter(event => event.id !== currentEventId)
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 3);
-        
-        renderRelatedEvents();
-        
-    } catch (error) {
-        console.error('Error loading related events:', error);
-        // Show empty state or default events
         relatedEvents = [];
         renderRelatedEvents();
+    } catch (error) {
+        console.error('Error disabling related events:', error);
     }
 }
 
 function renderRelatedEvents() {
     const relatedEventsGrid = document.getElementById('related-events-grid');
-    
-    if (relatedEvents.length === 0) {
-        relatedEventsGrid.innerHTML = `
-            <div class="no-events">
-                <i class="fas fa-calendar-alt"></i>
-                <h3>No Related Events</h3>
-                <p>Check back later for more exciting events!</p>
-            </div>
-        `;
-        return;
-    }
-    
-    relatedEventsGrid.innerHTML = '';
-    
-    relatedEvents.forEach(event => {
-        const eventCard = createRelatedEventCard(event);
-        relatedEventsGrid.appendChild(eventCard);
-    });
+    if (!relatedEventsGrid) return;
+    // Hide the section entirely when no related events are present
+    const section = relatedEventsGrid.closest('.related-events');
+    if (section) section.style.display = 'none';
 }
 
 function createRelatedEventCard(event) {
@@ -314,23 +379,17 @@ function createRelatedEventCard(event) {
     card.className = 'event-card';
     card.setAttribute('data-event-id', event.id);
     
-    const imageContent = event.image ? 
-        `<img src="${event.image}" alt="${event.title}" loading="lazy">` : 
-        `<i class="fas fa-${getEventIcon(event.category)}"></i>`;
+    const posterPath = event && event.id ? `../assets/posters/poster-${event.id}.jpg` : '../assets/posters/placeholder-poster.svg';
+    const alt = event && event.title ? event.title : 'Event Poster';
     
     card.innerHTML = `
-        <div class="event-image">
-            ${imageContent}
+        <div class="event-image a4-poster">
+            <img src="${posterPath}" alt="${alt}" loading="lazy" onerror="this.onerror=null;this.src='../assets/posters/placeholder-poster.svg';">
         </div>
-        <div class="event-content">
+        <div class="event-content compact">
             <h3 class="event-title">${event.title}</h3>
-            <p class="event-description">${event.shortDescription}</p>
-            <div class="event-meta">
-                <span class="event-prize">Prize: ${event.prize}</span>
-                <span class="event-date">${event.date}</span>
-            </div>
             <button class="btn btn-primary event-button" onclick="openRelatedEvent('${event.id}')">
-                <span>Learn More</span>
+                <span>View Details</span>
                 <i class="fas fa-arrow-right"></i>
             </button>
         </div>
@@ -354,7 +413,25 @@ function initializeNavigation() {
     // Mobile menu toggle (if needed)
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
-    
+
+    // Theme toggle for details page
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+        const setIcon = () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const icon = themeBtn.querySelector('i');
+            if (icon) icon.className = `fas ${current === 'dark' ? 'fa-sun' : 'fa-moon'}`;
+        };
+        setIcon();
+        themeBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch(_) {}
+            setIcon();
+        });
+    }
+
     if (navToggle && navMenu) {
         navToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
@@ -444,6 +521,8 @@ function copyEventLink() {
 
 // Related events navigation
 function openRelatedEvent(eventId) {
+    // Store id for reliability and update URL
+    try { sessionStorage.setItem('selectedEventId', eventId); } catch {}
     // Update URL and reload page with new event
     window.location.href = `details.html?id=${eventId}`;
 }
@@ -466,8 +545,36 @@ function getEventIcon(category) {
 }
 
 function getDefaultEvents() {
-    // Return empty array - events should be loaded from Firestore via admin panel
-    return [];
+    // Return a test event for debugging purposes
+    return [
+        {
+            id: 'test-event',
+            title: 'Sample Tech Event',
+            category: 'Technical',
+            shortDescription: 'A sample technical event for testing',
+            description: 'This is a detailed description of the sample technical event. It includes multiple paragraphs to test the content layout and responsive design features.',
+            prize: '₹5,000',
+            date: '2025-01-15',
+            participationFee: 'Free',
+            teamRequirements: '2-4 members per team',
+            rules: [
+                'Teams must consist of 2-4 members',
+                'All team members must be from the same institution',
+                'Laptops and software tools are allowed',
+                'Judges decision will be final'
+            ],
+            contacts: [
+                {
+                    name: 'John Doe',
+                    phone: '+91 98765 43210',
+                    email: 'john.doe@example.com'
+                }
+            ],
+            active: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        }
+    ];
 }
 
 // Loading and error handling

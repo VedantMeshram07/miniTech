@@ -1,15 +1,20 @@
 /* 
  * TechFest Website - Main Stylesheet
- * Modular CSS Architecture for Maintainability and Scalability
+ * Modern Design System with Enhanced Typography and Visual Impact
  * 
  * Structure:
- * 1. CSS Custom Properties (Design System)
- * 2. Base Styles and Reset
- * 3. Layout Components
- * 4. UI Components
- * 5. Animations and Effects
- * 6. Utilities and Responsive Design
+ * 1. Typography Foundation (Inter Font)
+ * 2. CSS Custom Properties (Design System)
+ * 3. Base Styles and Reset
+ * 4. Layout Components
+ * 5. UI Components
+ * 6. Animations and Effects
+ * 7. Utilities and Responsive Design
  */
+
+/* ===== TYPOGRAPHY ===== */
+/* Modern Font Stack - Inter for Superior Readability */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ===== FOUNDATION ===== */
 /* CSS Custom Properties - Design System Variables */
@@ -56,24 +61,67 @@
 }
 
 .section-title {
-    font-size: var(--font-size-4xl);
-    font-weight: 800;
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
     text-align: center;
-    margin-bottom: var(--spacing-2xl);
-    background: var(--gradient-text);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin-bottom: var(--space-12);
+    letter-spacing: var(--tracking-tight);
     background-clip: text;
 }
 
 /* Specific targeting for H2 with gradient-text class */
 h2.gradient-text,
 h2.event-title.gradient-text {
-    background: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #AF52DE 100%) !important;
+    background: linear-gradient(135deg, #007AFF 0%, #0056CC 50%, #40A6FF 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
     font-size: 4.5rem !important;
+    position: relative;
+}
+
+/* Dynamic single color with glow effect for TechFest 2025 title - Higher specificity */
+#hero-title-main.random-color-effect.gradient-text.event-title {
+    color: var(--random-color, #ffffff) !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+    position: relative;
+    filter: drop-shadow(0 0 8px var(--random-color, #64b5f6)) 
+            drop-shadow(0 0 16px var(--random-color, #64b5f6)) 
+            drop-shadow(0 0 24px var(--random-color, #64b5f6)) !important;
+    animation: subtleGlow 4s ease-in-out infinite alternate !important;
+}
+
+/* Enhanced glow animation */
+@keyframes subtleGlow {
+    0% {
+        filter: drop-shadow(0 0 6px var(--random-color, #64b5f6)) 
+                drop-shadow(0 0 12px var(--random-color, #64b5f6)) 
+                drop-shadow(0 0 18px var(--random-color, #64b5f6));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 10px var(--random-color, #64b5f6)) 
+                drop-shadow(0 0 20px var(--random-color, #64b5f6)) 
+                drop-shadow(0 0 30px var(--random-color, #64b5f6));
+        transform: scale(1.005);
+    }
+    100% {
+        filter: drop-shadow(0 0 8px var(--random-color, #64b5f6)) 
+                drop-shadow(0 0 16px var(--random-color, #64b5f6)) 
+                drop-shadow(0 0 24px var(--random-color, #64b5f6));
+        transform: scale(1);
+    }
+}
+
+/* Removed old blur animation - replaced with direct text color effect */
+
+/* Complete the gradient text styles */
+h2.gradient-text,
+h2.event-title.gradient-text {
     font-weight: 800 !important;
     line-height: 1.1 !important;
     text-align: center !important;
@@ -81,6 +129,27 @@ h2.event-title.gradient-text {
     padding: 0 !important;
     display: block !important;
     text-shadow: none !important;
+}
+
+/* Light Mode Global Styles */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-mode {
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+
+/* Light mode theme toggle button adjustments */
+body.light-mode #theme-toggle {
+    background: rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    color: #1a1a1a !important;
+}
+
+body.light-mode #theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Enhanced Interactive Effects */
@@ -132,7 +201,7 @@ h2.event-title.gradient-text {
 /* Enhanced card effects */
 .event-card,
 .coordinator-card {
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Image zoom on hover */

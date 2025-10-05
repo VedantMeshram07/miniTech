@@ -20,16 +20,30 @@
                     <span id="nav-college-name">TechFest</span>
                 </a>
             </div>
-            <div class="nav-menu">
-                <a href="../index.html" class="nav-link">Home</a>
-                <a href="../index.html#events" class="nav-link">Events</a>
-                <a href="../index.html#about" class="nav-link">About</a>
-                <a href="../index.html#contact" class="nav-link">Contact</a>
-            </div>
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            
+            <!-- Science Exhibition Mobile Logo (visible only on mobile) -->
+            <a href="science.html" class="science-exhibition-mobile" title="Science Exhibition">
+                <i class="fas fa-flask"></i>
+            </a>
+            
+            <div class="nav-controls">
+                <div class="nav-menu">
+                    <a href="../index.html" class="nav-link">Home</a>
+                    <a href="../index.html#events" class="nav-link">Events</a>
+                    <a href="science.html" class="nav-link science-exhibition-link">Science Exhibition</a>
+                    <a href="../index.html#about" class="nav-link">About</a>
+                    <a href="../index.html#contact" class="nav-link">Contact</a>
+                </div>
+                
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                
+                <div class="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -166,8 +180,14 @@
 
     <!-- Firebase Config -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="../assets/js/firebase-config.js"></script>
     <script src="../assets/js/event-details.js"></script>
+    <!-- Mouse Trail Effect -->
+    <script src="../assets/js/mouse-trail.js"></script>
+    <!-- Universal Theme Toggle -->
+    <script src="../assets/js/theme-toggle.js"></script>
 </body>
 </html>

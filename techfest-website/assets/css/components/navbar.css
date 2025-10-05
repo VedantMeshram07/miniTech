@@ -1,83 +1,147 @@
-/* Navbar Component Styles */
-/* Navigation component with glass morphism effect and smooth transitions */
+/* Modern Professional Navbar */
 
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
-    background: transparent !important;
-    backdrop-filter: blur(16px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    border: none;
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    z-index: var(--z-sticky);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all var(--transition);
 }
 
 .navbar.scrolled {
-    background: transparent !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.05) !important;
+    background: rgba(0, 0, 0, 0.9);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 clamp(1rem, 4vw, 2rem);
+    padding: 0 var(--space-6);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 80px;
+    height: 4rem; /* 64px */
 }
 
 .nav-logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    letter-spacing: -0.025em;
-    transition: all 0.3s ease;
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all var(--transition);
 }
 
 .nav-logo:hover {
-    transform: scale(1.05);
+    color: var(--accent);
 }
 
 .nav-menu {
     display: flex;
-    gap: clamp(1.5rem, 3vw, 2.5rem);
+    gap: var(--space-2);
     list-style: none;
+    margin: 0;
+    padding: 0;
     align-items: center;
+}
+
+.nav-item {
+    display: flex;
 }
 
 .nav-link {
     text-decoration: none;
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 0.95rem;
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    position: relative;
-    backdrop-filter: blur(10px);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius);
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
 }
 
 .nav-link:hover {
-    color: var(--primary-color);
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-1px);
-}
-
-.nav-link::after {
-    display: none;
-}
-
-.nav-link:hover::after {
-    width: 100%;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
 }
 
 .admin-link {
     color: var(--accent-color) !important;
+}
+
+/* Science Exhibition - Keep Distinct Orange Theme */
+.science-exhibition-link {
+    color: var(--science-color) !important;
+    font-weight: var(--font-semibold) !important;
+    background-color: rgba(255, 107, 53, 0.1) !important;
+    border: 1px solid rgba(255, 107, 53, 0.2) !important;
+    position: relative;
+}
+
+.science-exhibition-link:hover {
+    color: var(--science-color) !important;
+    background-color: rgba(255, 107, 53, 0.15) !important;
+    border-color: rgba(255, 107, 53, 0.3) !important;
+}
+
+/* Theme Toggle Styling */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    padding: 0.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--text-primary);
+    transform: rotate(180deg);
+}
+
+/* Right side controls */
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Science Exhibition Mobile Logo */
+.science-exhibition-mobile {
+    display: none;
+    background: linear-gradient(135deg, #FF6B35 0%, #FFD23F 100%);
+    color: white;
+    padding: 0.4rem;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+}
+
+.science-exhibition-mobile:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
 }
 
 .nav-toggle {
@@ -92,4 +156,102 @@
     background: var(--text-primary);
     margin: 3px 0;
     transition: all var(--transition-normal);
+}
+
+/* Mobile Navigation */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-2);
+}
+
+.nav-toggle span {
+    width: 20px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: all var(--transition);
+}
+
+@media (max-width: 768px) {
+    .nav-toggle { 
+        display: flex; 
+    }
+    
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-overlay);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border-light);
+        flex-direction: column;
+        gap: 0;
+        padding: var(--space-4);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .nav-menu.active { 
+        display: flex; 
+    }
+    
+    .nav-link { 
+        padding: var(--space-3) var(--space-4); 
+        width: 100%;
+        text-align: left;
+    }
+}
+
+/* Light mode adjustments for navbar */
+body.light-mode .navbar {
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .navbar.scrolled {
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .nav-logo {
+    color: var(--light-text-primary);
+}
+
+body.light-mode .nav-logo:hover {
+    color: var(--accent);
+}
+
+body.light-mode .nav-link {
+    color: var(--light-text-secondary);
+}
+
+body.light-mode .nav-link:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--light-text-primary);
+}
+
+body.light-mode .science-exhibition-link {
+    color: #FF8C00 !important;
+}
+
+body.light-mode .science-exhibition-link:hover {
+    color: #FF6B00 !important;
+    background: rgba(255, 140, 0, 0.1) !important;
+}
+
+body.light-mode .theme-toggle {
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--light-text-tertiary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
 }

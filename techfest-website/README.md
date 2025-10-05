@@ -62,7 +62,17 @@ techfest-website/
 └── README.md              # This file
 ```
 
-## 🚀 Quick Start
+## �️ Event Posters (A4) — Quick Note
+
+Event posters are hardcoded assets loaded by naming convention:
+
+- Folder: `assets/posterss/`
+- Name: `poster-<eventId>.jpg` (JPG only)
+- Ratio: A4 portrait (e.g., 744×1052 px or higher)
+
+How to find `<eventId>`: open the event details page and copy the `id` from the URL (e.g., `details.html?id=hackathon-2025`). You can also see it in the Admin “Event ID” field or Firestore `events` document ID. For full instructions and tips, see `assets/images/README.md`.
+
+## �🚀 Quick Start
 
 ### Prerequisites
 
@@ -180,6 +190,8 @@ Available CSS classes for animations:
 
 ```css
 .float-animation       /* Floating up/down */
+/* Floating up/down */
+/* Floating up/down */
 /* Floating up/down */
 .pulse                /* Pulsing effect */
 .slide-in-up          /* Slide from bottom */

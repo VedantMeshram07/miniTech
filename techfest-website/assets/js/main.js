@@ -315,6 +315,13 @@ function renderEvents() {
     
     // Add intersection observer for animation
     observeEventCards();
+    
+    // Initialize dynamic glow effects for new cards
+    if (window.dynamicCardColors) {
+        setTimeout(() => {
+            window.dynamicCardColors.refreshAllColors();
+        }, 100); // Small delay to ensure DOM is updated
+    }
 }
 
 function createEventCard(event) {
@@ -1226,42 +1233,56 @@ async function initializeStatsCounters() {
     const targets = await fetchStatsFromDatabase();
     
     const stats = [
-        { id: 'events-count', target: targets.events, suffix: '+', duration: 3500 },
-        { id: 'participants-count', target: targets.participants, suffix: '+', duration: 4000 },
-        { id: 'colleges-count', target: targets.colleges, suffix: '+', duration: 3500 }
+        { id: 'events-count', target: targets.events, suffix: '+', duration: 3000 },
+        { id: 'participants-count', target: targets.participants, suffix: '+', duration: 3000 },
+        { id: 'colleges-count', target: targets.colleges, suffix: '+', duration: 3000 }
     ];
 
     const observerOptions = {
-        threshold: 0.8,
-        rootMargin: '-100px 0px 0px 0px'
+        threshold: 0.5,
+        rootMargin: '-50px 0px 0px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const element = entry.target;
-                const statConfig = stats.find(stat => stat.id === element.id);
-                
-                if (statConfig && !element.classList.contains('animated')) {
-                    element.classList.add('animated');
-                    animateCounter(element, statConfig);
+                const statsSection = entry.target;
+                if (!statsSection.classList.contains('stats-animated')) {
+                    statsSection.classList.add('stats-animated');
+                    
+                    // Animate all counters with staggered timing
+                    stats.forEach((statConfig, index) => {
+                        const element = document.getElementById(statConfig.id);
+                        if (element && !element.classList.contains('animated')) {
+                            setTimeout(() => {
+                                element.classList.add('animated');
+                                animateCounter(element, statConfig);
+                            }, index * 200); // Stagger by 200ms each
+                        }
+                    });
                 }
             }
         });
     }, observerOptions);
 
-    // Observe all stat elements
-    stats.forEach(stat => {
-        const element = document.getElementById(stat.id);
-        if (element) {
-            observer.observe(element);
-        }
-    });
+    // Observe the stats section
+    const statsSection = document.getElementById('stats') || document.querySelector('.stats-section');
+    if (statsSection) {
+        observer.observe(statsSection);
+    } else {
+        // Fallback: observe individual elements if section not found
+        stats.forEach(stat => {
+            const element = document.getElementById(stat.id);
+            if (element) {
+                observer.observe(element);
+            }
+        });
+    }
 }
 
 function animateCounter(element, config) {
     const startTime = performance.now();
-    const startValue = Math.floor(config.target * 0.4); // Start from 40% of target
+    const startValue = 0; // Start from 0 for full effect
     const targetValue = config.target;
     const duration = config.duration;
     
@@ -1272,10 +1293,23 @@ function animateCounter(element, config) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // Easing function for smooth animation
-        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-        const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOutQuart);
+        // Custom timing curve: 0->20% medium speed, 20->75% fast, 75->100% gradually decreasing
+        let easedProgress;
+        if (progress <= 0.2) {
+            // 0-20%: Medium speed (linear)
+            easedProgress = progress * 2.5; // Scale to reach 0.5 at 20%
+        } else if (progress <= 0.75) {
+            // 20-75%: Fast speed (accelerated)
+            const localProgress = (progress - 0.2) / 0.55; // Map 20-75% to 0-1
+            easedProgress = 0.5 + (localProgress * localProgress) * 0.4; // Reach 0.9 at 75%
+        } else {
+            // 75-100%: Gradually decreasing speed (decelerated)
+            const localProgress = (progress - 0.75) / 0.25; // Map 75-100% to 0-1
+            const decelerated = 1 - Math.pow(1 - localProgress, 3); // Smooth deceleration
+            easedProgress = 0.9 + decelerated * 0.1; // Complete the remaining 10%
+        }
         
+        const currentValue = Math.floor(startValue + (targetValue - startValue) * easedProgress);
         element.textContent = currentValue + config.suffix;
         
         if (progress < 1) {

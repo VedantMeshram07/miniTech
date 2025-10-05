@@ -18,16 +18,18 @@ html {
 
 body {
     font-family: var(--font-family);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
     color: var(--text-primary);
-    background-color: var(--background);
+    background-color: var(--bg-primary);
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-semibold);
     line-height: var(--line-height-tight);
     margin-bottom: var(--spacing-sm);
 }
