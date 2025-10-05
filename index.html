@@ -445,14 +445,178 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     
-    <!-- Firebase Ready Checker -->
-    <script src="assets/js/firebase-ready-checker.js"></script>
-    
-    <!-- Environment Variables Loader -->
-    <script src="assets/js/env-loader.js"></script>
-    
-    <!-- Firebase Configuration -->
-    <script src="assets/js/firebase-config.js"></script>
+    <!-- Inline Firebase Configuration (MIME-type safe) -->
+    <script>
+        // Firebase Configuration - Inline to avoid MIME type issues
+        console.log('🔥 Starting inline Firebase initialization...');
+        
+        // Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4LvZCZSeHRW4aiDLFLnHw4NFKc6kluOY",
+            authDomain: "minitech-5cdcc.firebaseapp.com",
+            projectId: "minitech-5cdcc",
+            storageBucket: "minitech-5cdcc.firebasestorage.app",
+            messagingSenderId: "124252547061",
+            appId: "1:124252547061:web:2fabc1a9ff9997764822bc",
+            measurementId: "G-KSX5PZVSYW"
+        };
+
+        // Firebase initialization variables
+        let app, db, auth, storage;
+
+        // Initialize Firebase when DOM is ready
+        function initializeFirebaseInline() {
+            try {
+                console.log('🔥 Initializing Firebase inline...');
+                
+                // Check if Firebase SDK is loaded
+                if (typeof firebase === 'undefined') {
+                    console.error('❌ Firebase SDK not loaded');
+                    return false;
+                }
+                
+                console.log('✅ Firebase SDK detected, initializing app...');
+                
+                // Initialize Firebase app
+                app = firebase.initializeApp(firebaseConfig);
+                console.log('✅ Firebase app initialized');
+                
+                // Initialize services
+                if (typeof firebase.firestore !== 'undefined') {
+                    db = firebase.firestore();
+                    console.log('✅ Firestore initialized');
+                } else {
+                    console.warn('⚠️ Firestore SDK not available');
+                }
+                
+                if (typeof firebase.auth !== 'undefined') {
+                    auth = firebase.auth();
+                    console.log('✅ Firebase Auth initialized');
+                } else {
+                    console.warn('⚠️ Firebase Auth SDK not available');
+                }
+                
+                if (typeof firebase.storage !== 'undefined') {
+                    storage = firebase.storage();
+                    console.log('✅ Firebase Storage initialized');
+                } else {
+                    console.warn('⚠️ Firebase Storage SDK not available');
+                }
+                
+                // Make services available globally
+                window.app = app;
+                window.db = db;
+                window.auth = auth;
+                window.storage = storage;
+                
+                // Setup auth state listener
+                if (auth) {
+                    auth.onAuthStateChanged((user) => {
+                        if (user) {
+                            console.log('✅ User authenticated:', user.email);
+                        } else {
+                            console.log('ℹ️ No user authenticated');
+                        }
+                    });
+                }
+                
+                // Setup Firestore persistence
+                if (db) {
+                    db.enablePersistence({ synchronizeTabs: true })
+                        .then(() => {
+                            console.log('✅ Firestore offline persistence enabled');
+                        })
+                        .catch((err) => {
+                            if (err.code == 'failed-precondition') {
+                                console.warn('⚠️ Multiple tabs open, persistence can only be enabled in one tab at a time');
+                            } else if (err.code == 'unimplemented') {
+                                console.warn('⚠️ The current browser does not support persistence');
+                            } else {
+                                console.warn('⚠️ Firestore offline persistence failed:', err);
+                            }
+                        });
+                }
+                
+                console.log('🎉 Firebase inline initialization complete!');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error in inline Firebase initialization:', error);
+                
+                // Set global variables to null on error
+                window.app = null;
+                window.db = null;
+                window.auth = null;
+                window.storage = null;
+                
+                return false;
+            }
+        }
+        
+        // Initialize Firebase immediately if SDK is already loaded
+        if (typeof firebase !== 'undefined') {
+            initializeFirebaseInline();
+        } else {
+            // Wait for Firebase SDK to load
+            document.addEventListener('DOMContentLoaded', function() {
+                const checkFirebaseSDK = () => {
+                    if (typeof firebase !== 'undefined') {
+                        initializeFirebaseInline();
+                    } else {
+                        setTimeout(checkFirebaseSDK, 100);
+                    }
+                };
+                checkFirebaseSDK();
+            });
+        }
+        
+        // Firebase Ready Checker - Simplified inline version
+        window.FirebaseReadyChecker = {
+            async waitForFirebase() {
+                return new Promise((resolve, reject) => {
+                    console.log('🔍 FirebaseReadyChecker: Checking inline Firebase...');
+                    
+                    let attempts = 0;
+                    const maxAttempts = 50; // 50 attempts = 25 seconds max
+                    
+                    const check = () => {
+                        attempts++;
+                        
+                        // Check if Firebase is ready
+                        if (typeof firebase !== 'undefined' && 
+                            firebase.apps && firebase.apps.length > 0 &&
+                            window.db && window.auth) {
+                            
+                            console.log('✅ FirebaseReadyChecker: Firebase is ready!');
+                            console.log('📊 Firebase Status:', {
+                                sdkLoaded: typeof firebase !== 'undefined',
+                                appsCount: firebase.apps ? firebase.apps.length : 0,
+                                dbReady: !!window.db,
+                                authReady: !!window.auth,
+                                attemptsUsed: attempts
+                            });
+                            resolve(true);
+                            return;
+                        }
+                        
+                        if (attempts >= maxAttempts) {
+                            const errorMsg = `Firebase not ready after ${attempts} attempts`;
+                            console.error('❌ FirebaseReadyChecker:', errorMsg);
+                            reject(new Error(errorMsg));
+                            return;
+                        }
+                        
+                        console.log(`🔍 Attempt ${attempts}: Firebase not ready yet`);
+                        setTimeout(check, 500);
+                    };
+                    
+                    check();
+                });
+            }
+        };
+        
+        console.log('🚀 Inline Firebase system loaded');
+    </script>
     
     <!-- Main Application (ES6 Modules) -->
     <script type="module" src="assets/js/main-new.js"></script>

@@ -26,59 +26,57 @@ export async function initAuth() {
 }
 
 /**
- * Wait for Firebase to be available
- * @param {number} timeout - Maximum wait time in milliseconds (ignored, using FirebaseReadyChecker)
+ * Wait for Firebase to be available - Simplified for inline Firebase
+ * @param {number} timeout - Maximum wait time in milliseconds
  * @returns {Promise<boolean>} Whether Firebase is available
  */
 export function waitForFirebase(timeout = 15000) {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('🔍 Waiting for Firebase initialization...');
+            console.log('🔍 Waiting for inline Firebase initialization...');
             
-            // Use the robust Firebase ready checker if available
+            // Use the inline Firebase ready checker if available
             if (window.FirebaseReadyChecker) {
-                console.log('✅ Using FirebaseReadyChecker for reliable initialization');
+                console.log('✅ Using inline FirebaseReadyChecker');
                 await window.FirebaseReadyChecker.waitForFirebase();
                 resolve(true);
                 return;
             }
             
-            // Fallback to original method
-            console.log('⚠️ Using fallback Firebase check method');
+            // Direct check for inline Firebase initialization
+            console.log('⚠️ Using direct Firebase check for inline initialization');
             
-            // First, check if Firebase SDK is loaded
-            if (typeof firebase === 'undefined') {
-                reject(new Error('Firebase SDK not loaded'));
-                return;
-            }
-            
-            console.log('✅ Firebase SDK detected, waiting for app initialization...');
-            
-            // Wait for Firebase app initialization using our async function
-            if (window.initializeFirebaseAsync) {
-                console.log('🔄 Using Firebase async initialization...');
-                await window.initializeFirebaseAsync();
-                resolve(true);
-                return;
-            }
-            
-            // Final fallback: check for Firebase apps
             const startTime = Date.now();
-            const checkFirebase = () => {
-                if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
-                    console.log('✅ Firebase apps detected:', firebase.apps.length);
+            const checkInlineFirebase = () => {
+                // Check if Firebase SDK and inline initialization are complete
+                if (typeof firebase !== 'undefined' && 
+                    firebase.apps && firebase.apps.length > 0 &&
+                    window.db && window.auth) {
+                    
+                    console.log('✅ Inline Firebase is ready!');
+                    console.log('📊 Firebase Status:', {
+                        sdkLoaded: typeof firebase !== 'undefined',
+                        appsCount: firebase.apps ? firebase.apps.length : 0,
+                        dbReady: !!window.db,
+                        authReady: !!window.auth
+                    });
                     resolve(true);
-                } else if (Date.now() - startTime > timeout) {
-                    reject(new Error(`Firebase not available after ${timeout}ms`));
-                } else {
-                    setTimeout(checkFirebase, 200);
+                    return;
                 }
+                
+                if (Date.now() - startTime > timeout) {
+                    reject(new Error(`Inline Firebase not ready after ${timeout}ms`));
+                    return;
+                }
+                
+                console.log('🔍 Waiting for inline Firebase... SDK:', typeof firebase !== 'undefined', 'DB:', !!window.db, 'Auth:', !!window.auth);
+                setTimeout(checkInlineFirebase, 300);
             };
             
-            checkFirebase();
+            checkInlineFirebase();
             
         } catch (error) {
-            console.error('❌ Error waiting for Firebase:', error);
+            console.error('❌ Error waiting for inline Firebase:', error);
             reject(error);
         }
     });

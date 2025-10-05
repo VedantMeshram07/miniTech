@@ -141,10 +141,62 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     
-    <!-- Environment Variables Loader -->
-    <script src="../assets/js/env-loader.js"></script>
-    
-    <script src="../assets/js/firebase-config.js"></script>
+    <!-- Inline Firebase Configuration (MIME-type safe) -->
+    <script>
+        // Firebase Configuration - Inline to avoid MIME type issues
+        console.log('🔥 Admin: Starting inline Firebase initialization...');
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4LvZCZSeHRW4aiDLFLnHw4NFKc6kluOY",
+            authDomain: "minitech-5cdcc.firebaseapp.com",
+            projectId: "minitech-5cdcc",
+            storageBucket: "minitech-5cdcc.firebasestorage.app",
+            messagingSenderId: "124252547061",
+            appId: "1:124252547061:web:2fabc1a9ff9997764822bc",
+            measurementId: "G-KSX5PZVSYW"
+        };
+
+        let app, db, auth, storage;
+
+        function initializeFirebaseInline() {
+            try {
+                if (typeof firebase === 'undefined') return false;
+                
+                app = firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                auth = firebase.auth();
+                storage = firebase.storage();
+                
+                window.app = app;
+                window.db = db;
+                window.auth = auth;
+                window.storage = storage;
+                
+                console.log('✅ Admin: Firebase initialized successfully');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Admin: Firebase initialization error:', error);
+                return false;
+            }
+        }
+        
+        // Initialize immediately or wait for SDK
+        if (typeof firebase !== 'undefined') {
+            initializeFirebaseInline();
+        } else {
+            document.addEventListener('DOMContentLoaded', function() {
+                const check = () => {
+                    if (typeof firebase !== 'undefined') {
+                        initializeFirebaseInline();
+                    } else {
+                        setTimeout(check, 100);
+                    }
+                };
+                check();
+            });
+        }
+    </script>
     <script src="../assets/js/admin-login.js"></script>
     <!-- Mouse Trail Effect 
     <script src="../assets/js/mouse-trail.js"></script> -->
