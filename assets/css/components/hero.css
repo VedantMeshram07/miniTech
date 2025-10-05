@@ -500,8 +500,8 @@ body.light-mode .stat-label {
 }
 
 .college-logo-img, .event-logo-img {
-    width: 100%;
-    height: 100%;
+    width: 95%;
+    height: 95%;
     object-fit: contain;
     background: none !important;
     border: none !important;
