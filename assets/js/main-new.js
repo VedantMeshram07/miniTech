@@ -63,7 +63,7 @@ async function initializeApp() {
         
         // Wait for Firebase to be available
         updateFirebaseStatus('🔥 Waiting for Firebase...');
-        await waitForFirebase(5000);
+        await waitForFirebase(15000);
         console.log('✅ Firebase libraries loaded');
         console.log('🗄️ window.db status:', !!window.db);
         updateFirebaseStatus('✅ Firebase ready', `DB: ${!!window.db}`);

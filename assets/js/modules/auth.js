@@ -27,13 +27,24 @@ export async function initAuth() {
 
 /**
  * Wait for Firebase to be available
- * @param {number} timeout - Maximum wait time in milliseconds
+ * @param {number} timeout - Maximum wait time in milliseconds (ignored, using FirebaseReadyChecker)
  * @returns {Promise<boolean>} Whether Firebase is available
  */
-export function waitForFirebase(timeout = 10000) {
+export function waitForFirebase(timeout = 15000) {
     return new Promise(async (resolve, reject) => {
         try {
             console.log('🔍 Waiting for Firebase initialization...');
+            
+            // Use the robust Firebase ready checker if available
+            if (window.FirebaseReadyChecker) {
+                console.log('✅ Using FirebaseReadyChecker for reliable initialization');
+                await window.FirebaseReadyChecker.waitForFirebase();
+                resolve(true);
+                return;
+            }
+            
+            // Fallback to original method
+            console.log('⚠️ Using fallback Firebase check method');
             
             // First, check if Firebase SDK is loaded
             if (typeof firebase === 'undefined') {
@@ -51,7 +62,7 @@ export function waitForFirebase(timeout = 10000) {
                 return;
             }
             
-            // Fallback: check for Firebase apps
+            // Final fallback: check for Firebase apps
             const startTime = Date.now();
             const checkFirebase = () => {
                 if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {

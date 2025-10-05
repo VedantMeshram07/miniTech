@@ -7,20 +7,29 @@ services:
     domains:
       - techcarvaan-2025.onrender.com
     headers:
-      # MIME Type Headers (Critical for Render)
-      - path: /assets/js/*.js
+      # MIME Type Headers (Critical for Render) - Specific paths
+      - path: /assets/js/firebase-ready-checker.js
         name: Content-Type
         value: application/javascript; charset=utf-8
-      - path: /assets/css/*.css
-        name: Content-Type
-        value: text/css; charset=utf-8
-      - path: /*.js
+      - path: /assets/js/firebase-config.js
         name: Content-Type
         value: application/javascript; charset=utf-8
-      - path: /*.css
+      - path: /assets/js/env-loader.js
+        name: Content-Type
+        value: application/javascript; charset=utf-8
+      - path: /assets/js/main-new.js
+        name: Content-Type
+        value: application/javascript; charset=utf-8
+      - path: /assets/js/modules/*
+        name: Content-Type
+        value: application/javascript; charset=utf-8
+      - path: /assets/js/*
+        name: Content-Type
+        value: application/javascript; charset=utf-8
+      - path: /assets/css/*
         name: Content-Type
         value: text/css; charset=utf-8
-      
+
       # Security headers
       - path: /*
         name: X-Frame-Options
@@ -31,7 +40,7 @@ services:
       - path: /*
         name: Referrer-Policy
         value: strict-origin-when-cross-origin
-      
+
       # Cache headers for assets
       - path: /assets/*
         name: Cache-Control

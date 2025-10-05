@@ -24,7 +24,7 @@
 
    ```bash
    git add .
-   git commit -m "Prepare for Render deployment - Fixed Firebase config"
+   git commit -m "Fix MIME types, Firebase timeouts, and add reliability improvements for Render"
    git push origin main
    ```
 
@@ -54,13 +54,14 @@
    - Click "Connect"
 
 4. **Configure Build Settings:**
+
    ```
    Name: techfest-website
    Branch: main
    Build Command: echo "Static site build complete"
    Publish Directory: ./
    ```
-   
+
    **Important:** Render will automatically use your `render.yaml` file which includes MIME type fixes.
 
 ### Step 3: Firebase Configuration 🔥
@@ -138,7 +139,8 @@ The configuration is automatically handled by:
 ### MIME Type Issues (FIXED ✅)
 
 **Problem:** "Refused to execute script" or "MIME type" errors
-**Solution:** 
+**Solution:**
+
 - ✅ **Already fixed** in `render.yaml` with proper Content-Type headers
 - Files are now served with correct MIME types
 
@@ -146,6 +148,7 @@ The configuration is automatically handled by:
 
 **Problem:** Firebase services are null/undefined or timeout errors
 **Solution:**
+
 - ✅ **Already fixed** with improved initialization timing
 - Check browser console for Firebase initialization logs
 - Look for "✅ Firebase initialization completed successfully"

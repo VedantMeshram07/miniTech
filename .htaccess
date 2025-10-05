@@ -1,0 +1,47 @@
+# MIME Type Configuration for Static Files
+# Backup configuration for proper JavaScript and CSS serving
+
+# JavaScript Files
+<Files "*.js">
+    ForceType application/javascript
+    Header set Content-Type "application/javascript; charset=utf-8"
+</Files>
+
+# CSS Files  
+<Files "*.css">
+    ForceType text/css
+    Header set Content-Type "text/css; charset=utf-8"
+</Files>
+
+# Specific JavaScript Files (most critical)
+<Files "firebase-config.js">
+    ForceType application/javascript
+    Header set Content-Type "application/javascript; charset=utf-8"
+</Files>
+
+<Files "env-loader.js">
+    ForceType application/javascript
+    Header set Content-Type "application/javascript; charset=utf-8"
+</Files>
+
+<Files "main-new.js">
+    ForceType application/javascript
+    Header set Content-Type "application/javascript; charset=utf-8"
+</Files>
+
+# Security Headers
+Header always set X-Frame-Options "DENY"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Cache Control for Assets
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|svg|ico)$">
+    Header set Cache-Control "public, max-age=86400"
+</FilesMatch>
+
+# Gzip Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE text/javascript
+</IfModule>
