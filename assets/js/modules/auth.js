@@ -30,21 +30,46 @@ export async function initAuth() {
  * @param {number} timeout - Maximum wait time in milliseconds
  * @returns {Promise<boolean>} Whether Firebase is available
  */
-export function waitForFirebase(timeout = 5000) {
-    return new Promise((resolve, reject) => {
-        const startTime = Date.now();
-        
-        const checkFirebase = () => {
-            if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
-                resolve(true);
-            } else if (Date.now() - startTime > timeout) {
-                reject(new Error(`Firebase not available after ${timeout}ms`));
-            } else {
-                setTimeout(checkFirebase, 100);
+export function waitForFirebase(timeout = 10000) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log('🔍 Waiting for Firebase initialization...');
+            
+            // First, check if Firebase SDK is loaded
+            if (typeof firebase === 'undefined') {
+                reject(new Error('Firebase SDK not loaded'));
+                return;
             }
-        };
-        
-        checkFirebase();
+            
+            console.log('✅ Firebase SDK detected, waiting for app initialization...');
+            
+            // Wait for Firebase app initialization using our async function
+            if (window.initializeFirebaseAsync) {
+                console.log('🔄 Using Firebase async initialization...');
+                await window.initializeFirebaseAsync();
+                resolve(true);
+                return;
+            }
+            
+            // Fallback: check for Firebase apps
+            const startTime = Date.now();
+            const checkFirebase = () => {
+                if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+                    console.log('✅ Firebase apps detected:', firebase.apps.length);
+                    resolve(true);
+                } else if (Date.now() - startTime > timeout) {
+                    reject(new Error(`Firebase not available after ${timeout}ms`));
+                } else {
+                    setTimeout(checkFirebase, 200);
+                }
+            };
+            
+            checkFirebase();
+            
+        } catch (error) {
+            console.error('❌ Error waiting for Firebase:', error);
+            reject(error);
+        }
     });
 }
 

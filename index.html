@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="site-title">Techfest 2025</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/style-new.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -437,24 +439,17 @@
         <div class="loader"></div>
     </div>
 
-    <!-- Firebase Config -->
     <!-- Firebase SDK -->
-<script src="assets/js/env-config.generated.js"></script>
-<script src="assets/js/env-loader.js"></script>
-     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     
-    <!-- 2. Production environment variables -->
-<script src="assets/js/env-config.js"></script>
-
-<!-- 3. Environment Loader -->
-<script src="assets/js/env-loader.js"></script>
-
-<!-- 4. Firebase Config (uses env-loader internally) -->
-<script src="assets/js/firebase-config.js"></script>
+    <!-- Environment Variables Loader -->
+    <script src="assets/js/env-loader.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="assets/js/firebase-config.js"></script>
     
     <!-- Main Application (ES6 Modules) -->
     <script type="module" src="assets/js/main-new.js"></script>
