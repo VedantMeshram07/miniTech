@@ -1,0 +1,217 @@
+/* Contact Section and Coordinators Component Styles */
+/* Contact information cards and coordinator displays */
+
+.contact-section {
+    padding: var(--space-20) 0;
+    background: var(--bg-primary);
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.contact-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 
+        0 4px 20px rgba(139, 92, 246, 0.15),
+        0 8px 32px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 250px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+.contact-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(139, 92, 246, 0.6);
+    transform: translateY(-4px);
+    box-shadow: 
+        0 12px 48px rgba(139, 92, 246, 0.25),
+        0 8px 32px rgba(139, 92, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.contact-item i {
+    font-size: var(--font-size-2xl);
+    color: #a78bfa;
+    margin-bottom: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover i {
+    color: #8b5cf6;
+    transform: scale(1.1);
+}
+
+.contact-item h4 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+    color: #ffffff !important;
+}
+
+.contact-item p {
+    color: #e5e5e5 !important;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Event Coordinators Section - Enhanced Visibility */
+.coordinators {
+    margin-top: var(--spacing-2xl);
+}
+
+.coordinators h3 {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+/* 2-row coordinators layout */
+.coordinators-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    margin: 0 auto;
+    max-width: 1000px;
+}
+
+/* Convenor row - single centered card */
+.convenor-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Co-convenors row - horizontal cards */
+.co-convenors-row {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.coordinator-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
+    transition: all 0.3s ease;
+    min-width: 200px;
+    max-width: 280px;
+}
+
+/* Convenor card styling - Enhanced visibility */
+.convenor-card {
+    flex: 0 0 auto;
+    border: 2px solid var(--accent);
+    background: var(--bg-primary);
+}
+
+/* Co-convenor cards styling */
+.co-convenor-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 250px;
+}
+
+.coordinator-card:hover {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(139, 92, 246, 0.3);
+    transform: translateY(-2px);
+}
+
+.convenor-card .coordinator-avatar {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-sm) auto;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.co-convenor-card .coordinator-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-sm) auto;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.coordinator-card h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.coordinator-card .role {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    margin-bottom: var(--space-3);
+}
+
+.coordinator-card .contact {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.coordinator-card .phone {
+    color: var(--accent);
+    font-weight: var(--font-medium);
+}
+
+.no-coordinators {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+}
+
+.no-coordinators i {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-color);
+}

@@ -1,0 +1,806 @@
+/* Hero Section Component Styles */
+/* Main hero section with animations, organization header, and stats */
+
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 80px 0 var(--space-8);
+    background: #000000;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+/* Light mode styles */
+body.light-mode .hero {
+    background: #ffffff;
+}
+
+/* Subtle Linear-style grid pattern - Layer 4: Above chips */
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        /* Grid pattern */
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        /* Transition gradient at bottom */
+        linear-gradient(to bottom, transparent 0%, transparent 85%, rgba(0, 0, 0, 0.2) 95%, rgba(0, 0, 0, 0.4) 100%);
+    background-size: 40px 40px, 40px 40px, 100% 100%;
+    pointer-events: none;
+    z-index: 1;
+    transition: background-image 0.3s ease;
+}
+
+/* Light mode grid pattern */
+body.light-mode .hero::after {
+    background-image: 
+        /* Inverted grid pattern */
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        /* Inverted transition gradient at bottom */
+        linear-gradient(to bottom, transparent 0%, transparent 85%, rgba(255, 255, 255, 0.2) 95%, rgba(255, 255, 255, 0.4) 100%);
+}
+
+/* Random Scattered Shapes - Individual shapes at specific positions */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    filter: blur(2px);
+    background-image: 
+        /* Random Circles - Various sizes and positions */
+        radial-gradient(circle 42px at 12% 18%, rgba(156, 163, 175, 0.35), transparent),
+        radial-gradient(circle 58px at 78% 25%, rgba(107, 114, 128, 0.3), transparent),
+        radial-gradient(circle 40px at 23% 65%, rgba(75, 85, 99, 0.33), transparent),
+        radial-gradient(circle 48px at 67% 72%, rgba(156, 163, 175, 0.28), transparent),
+        radial-gradient(circle 44px at 89% 15%, rgba(107, 114, 128, 0.25), transparent),
+        radial-gradient(circle 52px at 34% 82%, rgba(75, 85, 99, 0.31), transparent),
+        radial-gradient(circle 41px at 56% 35%, rgba(156, 163, 175, 0.29), transparent),
+        radial-gradient(circle 60px at 15% 88%, rgba(107, 114, 128, 0.27), transparent),
+        
+        /* Random Squares/Diamonds */
+        radial-gradient(45px 45px at 45% 28%, rgba(75, 85, 99, 0.3), transparent),
+        radial-gradient(50px 50px at 73% 58%, rgba(156, 163, 175, 0.28), transparent),
+        radial-gradient(47px 47px at 28% 45%, rgba(107, 114, 128, 0.26), transparent),
+        
+        /* Random Triangular shapes */
+        radial-gradient(ellipse 43px 56px at 62% 12%, rgba(156, 163, 175, 0.27), transparent),
+        radial-gradient(ellipse 54px 41px at 38% 78%, rgba(75, 85, 99, 0.29), transparent),
+        radial-gradient(ellipse 46px 49px at 82% 65%, rgba(107, 114, 128, 0.25), transparent);
+    
+    background-size: 
+        100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
+        100% 100%, 100% 100%, 100% 100%,
+        100% 100%, 100% 100%, 100% 100%;
+    
+    animation: floatingShapes 18s ease-in-out infinite;
+}
+
+/* Gentle floating animation for scattered shapes */
+@keyframes floatingShapes {
+    0%, 100% {
+        opacity: 0.7;
+        transform: translateY(0px) scale(1) rotate(0deg);
+    }
+    
+    33% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.1) rotate(2deg);
+    }
+    
+    66% {
+        opacity: 0.5;
+        transform: translateY(-15px) scale(0.9) rotate(-1deg);
+    }
+}
+
+/* Additional Random Scattered Shapes - Second layer */
+.hero-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 6;
+    filter: blur(3px);
+    background-image: 
+        /* More random circles */
+        radial-gradient(circle 45px at 19% 32%, rgba(209, 213, 219, 0.32), transparent),
+        radial-gradient(circle 53px at 71% 19%, rgba(156, 163, 175, 0.28), transparent),
+        radial-gradient(circle 48px at 42% 67%, rgba(107, 114, 128, 0.3), transparent),
+        radial-gradient(circle 40px at 85% 43%, rgba(75, 85, 99, 0.26), transparent),
+        radial-gradient(circle 51px at 8% 76%, rgba(156, 163, 175, 0.27), transparent),
+        radial-gradient(circle 46px at 58% 89%, rgba(107, 114, 128, 0.29), transparent),
+        
+        /* Random geometric shapes */
+        radial-gradient(ellipse 49px 42px at 91% 28%, rgba(75, 85, 99, 0.28), transparent),
+        radial-gradient(ellipse 44px 55px at 36% 8%, rgba(156, 163, 175, 0.26), transparent),
+        radial-gradient(ellipse 47px 47px at 65% 48%, rgba(107, 114, 128, 0.25), transparent),
+        
+        /* Small accent shapes */
+        radial-gradient(circle 43px at 52% 23%, rgba(209, 213, 219, 0.35), transparent),
+        radial-gradient(circle 59px at 24% 56%, rgba(156, 163, 175, 0.24), transparent);
+    
+    background-size: 
+        100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
+        100% 100%, 100% 100%, 100% 100%,
+        100% 100%, 100% 100%;
+    
+    animation: poppingShapes 14s ease-in-out infinite;
+}
+
+/* Subtle popping animation for second layer */
+@keyframes poppingShapes {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1) rotate(0deg);
+    }
+    
+    25% {
+        opacity: 0.9;
+        transform: scale(1.4) rotate(3deg);
+    }
+    
+    50% {
+        opacity: 0.2;
+        transform: scale(0.6) rotate(-2deg);
+    }
+    
+    75% {
+        opacity: 0.8;
+        transform: scale(1.2) rotate(1deg);
+    }
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+}
+
+/* Logo Placeholders */
+.logo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: calc(var(--border-radius) - 2px);
+    background: var(--gradient-primary);
+    transition: all var(--transition-normal);
+}
+
+.logo-placeholder i {
+    font-size: 28px;
+    color: white;
+    opacity: 0.9;
+}
+
+.logo-placeholder.college-logo {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 20px;
+}
+
+.logo-placeholder.organizing-logo {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.logo-placeholder.techfest-logo {
+    background: var(--gradient-primary);
+    border-radius: 50%;
+}
+
+.logo-placeholder.techfest-logo i {
+    font-size: 40px;
+}
+
+.logo-placeholder.event-logo {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 100%);
+    border-radius: 20px;
+}
+
+.logo-info h3,
+.logo-info h4 {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    line-height: 1.2;
+}
+
+.logo-info p {
+    margin: 2px 0 0 0;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.presents-text {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Techfest Branding */
+.techfest-branding {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.techfest-logo-container {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto var(--spacing-md);
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(139, 92, 246, 0.2);
+    animation: pulse 3s ease-in-out infinite;
+}
+
+.techfest-logo-container img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.hero-theme {
+    display: block;
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-top: var(--spacing-xs);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Modern Hero Details Cards - Layer 5: Content */
+.hero-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin: 0 auto var(--spacing-sm) auto;
+    max-width: 600px;
+    position: relative;
+    z-index: 50;
+    animation: slideInUp 0.8s ease-out 0.8s both;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-sm);
+}
+
+.detail-item i {
+    font-size: var(--text-3xl);
+    color: white;
+    margin-bottom: var(--spacing-sm);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.detail-label {
+    font-size: var(--text-sm);
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.detail-value {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Hero Content Elements */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 6px 12px;
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 8px;
+    margin-bottom: var(--spacing-lg);
+    animation: slideInUp 0.8s ease-out;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-6);
+    animation: slideInUp 0.8s ease-out 0.1s both;
+}
+
+.hero-title span {
+    display: block;
+}
+
+#hero-title-line1 {
+    color: var(--text-secondary);
+    font-size: var(--font-size-3xl);
+    font-weight: 600;
+}
+
+.hero-description {
+    font-size: var(--font-size-xl);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    max-width: 500px;
+    animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+/* Modern Hero Stats with Enhanced Visibility */
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+    margin-bottom: 0;
+    animation: slideInUp 0.8s ease-out 1.0s both;
+    position: relative;
+    z-index: 50;
+}
+
+.stat {
+    text-align: center;
+    min-width: 120px;
+}
+
+.stat-number {
+    display: block;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700;
+    color: white;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--spacing-xs);
+    transition: color 0.3s ease;
+}
+
+/* Light mode stat numbers */
+body.light-mode .stat-number {
+    color: #1a1a1a;
+}
+
+.stat-label {
+    font-size: var(--text-xs);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+/* Light mode stat label */
+body.light-mode .stat-label {
+    color: rgba(26, 26, 26, 0.7);
+}
+
+.hero-buttons {
+    position: relative;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-2xl);
+    animation: slideInUp 0.8s ease-out 0.9s both;
+}
+
+.hero-buttons .btn {
+    padding: 12px 24px;
+    font-size: var(--text-base);
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.hero-buttons .btn-primary {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    color: black;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.hero-buttons .btn-primary:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.hero-buttons .btn-secondary {
+    background: transparent;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hero-buttons .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Organization Header Section */
+.organization-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto var(--spacing-md) auto;
+    padding: 0;
+    position: relative;
+    z-index: 50;
+}
+
+.header-logo {
+    flex: 0 0 auto;
+    width: 212px; /* 85% of 250px */
+    height: 212px; /* 85% of 250px */
+    background: none !important;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: none;
+}
+
+.header-logo:hover {
+    transform: scale(1.05);
+}
+
+.college-logo-img, .event-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Mobile logos container - hidden on desktop */
+.mobile-logos-container {
+    display: none;
+}
+
+/* Desktop logos - visible by default */
+.desktop-logo {
+    display: flex;
+}
+
+.organization-content {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-lg);
+}
+
+.college-small {
+    font-size: clamp(0.9rem, 1.8vw, 1.3rem);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: var(--spacing-xs);
+    animation: slideInUp 0.8s ease-out 0.1s both;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Light mode college small text */
+body.light-mode .college-small {
+    color: rgba(26, 26, 26, 0.85);
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+.organization-name {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    color: white;
+    margin: 0 0 var(--spacing-xs) 0;
+    line-height: var(--leading-tight);
+    letter-spacing: -1px;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    animation: slideInUp 0.8s ease-out 0.2s both;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Light mode organization name */
+body.light-mode .organization-name {
+    color: #1a1a1a;
+    text-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+}
+
+.presents-text {
+    font-size: var(--text-sm);
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    animation: slideInUp 0.8s ease-out 0.3s both;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Light mode presents text */
+body.light-mode .presents-text {
+    color: rgba(26, 26, 26, 0.8);
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+/* Main Hero Content */
+.hero-main-content {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 50;
+    padding: 0 var(--spacing-md);
+}
+
+.hero-event {
+    margin-bottom: var(--spacing-md);
+}
+
+.event-title {
+    font-size: clamp(3.5rem, 8vw, 6rem);
+    font-weight: 900;
+    margin: 0 0 var(--spacing-sm) 0;
+    line-height: 0.95;
+    color: white;
+    text-shadow: none;
+    animation: slideInUp 0.8s ease-out 0.4s both;
+    transition: color 0.3s ease;
+}
+
+/* Light mode event title */
+body.light-mode .event-title {
+    color: #1a1a1a;
+}
+
+.event-theme {
+    display: block;
+    font-size: var(--text-sm);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    animation: slideInUp 0.8s ease-out 0.5s both;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    margin-top: 8px;
+    margin-bottom: var(--spacing-sm);
+    animation: slideInUp 0.8s ease-out 0.6s both;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* Light mode hero badge */
+body.light-mode .hero-badge {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    color: #1a1a1a;
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+}
+
+.hero-description {
+    font-size: var(--text-xl);
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.6;
+    max-width: 700px;
+    font-weight: 400;
+    margin: 0 auto var(--spacing-sm) auto;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    animation: slideInUp 0.8s ease-out 0.7s both;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Light mode hero description */
+body.light-mode .hero-description {
+    color: rgba(26, 26, 26, 0.95);
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+/* Modern Animation Keyframes */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero {
+        padding: 70px 0 var(--spacing-xl);
+    }
+    
+    .organization-header {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-lg);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    /* Hide desktop logos on mobile */
+    .desktop-logo {
+        display: none !important;
+    }
+    
+    /* Show mobile logos container */
+    .mobile-logos-container {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .mobile-logos-container .header-logo {
+        width: 102px; /* 85% of 120px */
+        height: 102px; /* 85% of 120px */
+    }
+    
+    .organization-content {
+        padding: 0;
+    }
+    
+    .college-small {
+        font-size: clamp(1rem, 4vw, 1.4rem);
+        letter-spacing: 2px;
+    }
+    
+    .organization-name {
+        font-size: clamp(1.8rem, 6vw, 2.4rem);
+    }
+    
+    .event-title {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+    }
+    
+    .hero-details {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+        margin: var(--spacing-lg) auto;
+    }
+    
+    .detail-item {
+        padding: var(--spacing-lg);
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-xl);
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+    }
+    
+    .hero-stats {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: var(--spacing-md);
+        margin: var(--spacing-lg) auto;
+    }
+}
+
+/* Stats Section - Separated from Hero */
+.stats-section {
+    padding: var(--spacing-xl) 0;
+    background: transparent;
+    position: relative;
+    z-index: 10;
+}
+
+.stats-section .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2xl);
+    margin-bottom: 0;
+    animation: slideInUp 0.8s ease-out 0.3s both;
+    position: relative;
+    z-index: 50;
+}
+
+.stats-section .stat {
+    text-align: center;
+    min-width: 120px;
+    background: transparent;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.stats-section .stat:hover {
+    transform: translateY(-3px);
+}
+
+@media (max-width: 768px) {
+    .stats-section {
+        padding: var(--spacing-lg) 0;
+    }
+    
+    .stats-section .hero-stats {
+        flex-direction: row;
+        gap: var(--spacing-lg);
+        justify-content: center;
+    }
+    
+    .stats-section .stat {
+        min-width: 100px;
+    }
+}

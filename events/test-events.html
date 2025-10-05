@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event ID Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #results { background: #f8f9fa; padding: 15px; border-radius: 4px; margin-top: 20px; max-height: 400px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .event-link { display: block; margin: 5px 0; padding: 10px; background: #e9ecef; border-radius: 4px; text-decoration: none; color: #495057; }
+        .event-link:hover { background: #dee2e6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Event ID Tester</h1>
+        <p>This tool will show what events are actually in Firestore and test loading specific ones.</p>
+        
+        <button onclick="listAllEvents()">List All Events</button>
+        <button onclick="testSpecificEvent()">Test cs-hackathon</button>
+        
+        <div id="results"></div>
+        <div id="event-links"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="../assets/js/firebase-config.js"></script>
+    
+    <script>
+        let results = document.getElementById('results');
+        let eventLinks = document.getElementById('event-links');
+        
+        function log(message) {
+            results.textContent += new Date().toLocaleTimeString() + ' - ' + message + '\n';
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        async function listAllEvents() {
+            results.textContent = '';
+            eventLinks.innerHTML = '';
+            log('📋 Listing all events in Firestore...');
+            
+            if (!window.db) {
+                log('❌ Firestore not available');
+                return;
+            }
+            
+            try {
+                const snapshot = await window.db.collection('events').get();
+                log(`📊 Found ${snapshot.size} events in Firestore:`);
+                
+                if (snapshot.empty) {
+                    log('⚠️ No events found in database');
+                    return;
+                }
+                
+                const events = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const event = {
+                        id: doc.id,
+                        title: data.title || 'No title',
+                        description: data.description || data.shortDescription || 'No description'
+                    };
+                    events.push(event);
+                    log(`📄 Event ID: ${event.id} | Title: ${event.title}`);
+                });
+                
+                // Create clickable links
+                eventLinks.innerHTML = '<h3>Test these events:</h3>';
+                events.forEach(event => {
+                    const link = document.createElement('a');
+                    link.href = `details.html?id=${event.id}`;
+                    link.className = 'event-link';
+                    link.textContent = `${event.id} - ${event.title}`;
+                    link.target = '_blank';
+                    eventLinks.appendChild(link);
+                });
+                
+            } catch (error) {
+                log(`❌ Error listing events: ${error.message}`);
+            }
+        }
+        
+        async function testSpecificEvent() {
+            results.textContent = '';
+            const eventId = 'cs-hackathon';
+            log(`🔍 Testing specific event: ${eventId}`);
+            
+            if (!window.db) {
+                log('❌ Firestore not available');
+                return;
+            }
+            
+            try {
+                // Test direct document access
+                const doc = await window.db.collection('events').doc(eventId).get();
+                log(`📄 Document exists: ${doc.exists}`);
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    log(`📋 Event data: ${JSON.stringify(data, null, 2)}`);
+                } else {
+                    log('⚠️ Document does not exist');
+                }
+                
+                // Test via DatabaseManager
+                if (window.dbManager) {
+                    const managerResult = await window.dbManager.getEvent(eventId);
+                    log(`🔧 DatabaseManager result: ${managerResult ? JSON.stringify(managerResult, null, 2) : 'null'}`);
+                }
+                
+            } catch (error) {
+                log(`❌ Error testing event: ${error.message}`);
+            }
+        }
+        
+        // Auto-run when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (window.db) {
+                    listAllEvents();
+                } else {
+                    log('❌ Firebase not ready');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
