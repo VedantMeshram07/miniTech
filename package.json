@@ -4,10 +4,10 @@
   "description": "TechCarvaan 2025 - Technical Festival Website with Environment Variables",
   "main": "index.html",
   "scripts": {
-    "start": "cd techfest-website && python -m http.server ${PORT:-8080}",
-    "dev": "cd techfest-website && python -m http.server 3000",
-    "build": "node build.js",
-    "build:prod": "NODE_ENV=production node build.js"
+    "start": "python -m http.server ${PORT:-8080}",
+    "dev": "python -m http.server 3000",
+    "build": "echo 'Building for production...' && cp -r . dist/ 2>/dev/null || robocopy . dist /E /XD node_modules .git dist > nul 2>&1 || true",
+    "serve": "python -m http.server ${PORT:-8080}"
   },
   "repository": {
     "type": "git",

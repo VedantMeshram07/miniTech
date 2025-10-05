@@ -2,28 +2,10 @@ services:
   - type: web
     name: techfest-website
     env: static
-    buildCommand: echo "Static site - no build required"
-    staticPublishPath: ./techfest-website
+    buildCommand: echo "Static site build complete"
+    staticPublishPath: ./
     domains:
       - techcarvaan-2025.onrender.com
-    envVars:
-      # Add your Firebase production keys here
-      - key: FIREBASE_API_KEY
-        value: "AIzaSyB4LvZCZSeHRW4aiDLFLnHw4NFKc6kluOY"
-      - key: FIREBASE_AUTH_DOMAIN
-        value: "minitech-5cdcc.firebaseapp.com"
-      - key: FIREBASE_PROJECT_ID
-        value: "minitech-5cdcc"
-      - key: FIREBASE_STORAGE_BUCKET
-        value: "minitech-5cdcc.firebasestorage.app"
-      - key: FIREBASE_MESSAGING_SENDER_ID
-        value: "124252547061"
-      - key: FIREBASE_APP_ID
-        value: "1:124252547061:web:2fabc1a9ff9997764822bc"
-      - key: FIREBASE_MEASUREMENT_ID
-        value: "G-KSX5PZVSYW"
-      - key: NODE_ENV
-        value: production
     headers:
       # Security headers
       - path: /*

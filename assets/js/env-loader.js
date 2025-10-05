@@ -1,6 +1,6 @@
 // Environment Variables Loader
-// This module loads environment variables for the frontend application
-// Note: In production, these should be injected at build time by your build process
+// Simple and reliable environment loader for static sites
+// Works with Render and other static site hosts
 
 class EnvironmentLoader {
     constructor() {
@@ -10,25 +10,18 @@ class EnvironmentLoader {
     }
 
     detectEnvironment() {
-        // Check if we're in production based on common indicators
-        return window.location.protocol === 'https:' || 
-               window.location.hostname !== 'localhost' && 
-               window.location.hostname !== '127.0.0.1';
+        // Check if we're in production based on hostname and protocol
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('127.0.0.1');
+        const isHTTPS = window.location.protocol === 'https:';
+        
+        return !isLocalhost || isHTTPS;
     }
 
     loadEnvironmentVariables() {
-        // First, try to load from build-time injected variables (production)
-        if (typeof window.ENV_CONFIG !== 'undefined') {
-            console.log('🔧 Loading environment from build-time config');
-            this.env = { ...window.ENV_CONFIG };
-            return;
-        }
-
-        // Development fallback - these values will be used in development
-        // In production, these should be replaced by your build system
-        console.log('🔧 Loading environment from development config');
-        
-        this.env = {
+        // Production Firebase configuration
+        // These values should match your Firebase project
+        const productionConfig = {
             FIREBASE_API_KEY: 'AIzaSyB4LvZCZSeHRW4aiDLFLnHw4NFKc6kluOY',
             FIREBASE_AUTH_DOMAIN: 'minitech-5cdcc.firebaseapp.com',
             FIREBASE_PROJECT_ID: 'minitech-5cdcc',
@@ -38,16 +31,24 @@ class EnvironmentLoader {
             FIREBASE_MEASUREMENT_ID: 'G-KSX5PZVSYW'
         };
 
-        // Log warning if using fallback in what appears to be production
-        if (this.isProduction) {
-            console.warn('⚠️ Using development Firebase config in production environment. Please configure proper environment variables.');
-        }
+        // Use the same config for both development and production
+        // This ensures consistency across environments
+        this.env = { ...productionConfig };
+        
+        const envType = this.isProduction ? 'production' : 'development';
+        console.log(`🔧 Loading Firebase config for ${envType} environment`);
+        console.log('📍 Environment details:', {
+            hostname: window.location.hostname,
+            protocol: window.location.protocol,
+            isProduction: this.isProduction
+        });
     }
 
     get(key) {
         const value = this.env[key];
-        if (!value) {
+        if (!value && value !== '') {
             console.error(`❌ Environment variable ${key} is not defined`);
+            return null;
         }
         return value;
     }
@@ -66,7 +67,14 @@ class EnvironmentLoader {
             'FIREBASE_APP_ID'
         ];
 
-        return requiredKeys.every(key => this.env[key]);
+        const missingKeys = requiredKeys.filter(key => !this.env[key]);
+        
+        if (missingKeys.length > 0) {
+            console.error('❌ Missing required environment variables:', missingKeys);
+            return false;
+        }
+        
+        return true;
     }
 
     validateConfiguration() {
@@ -76,20 +84,37 @@ class EnvironmentLoader {
         }
         
         console.log('✅ Firebase environment configuration is valid');
+        console.log('🔥 Firebase Project ID:', this.env.FIREBASE_PROJECT_ID);
+        console.log('🌐 Firebase Auth Domain:', this.env.FIREBASE_AUTH_DOMAIN);
         return true;
     }
 }
 
-// Initialize and export
+// Initialize environment loader
+console.log('🚀 Initializing Environment Loader...');
 const envLoader = new EnvironmentLoader();
 
 // Validate configuration
-envLoader.validateConfiguration();
+const isValid = envLoader.validateConfiguration();
+
+if (!isValid) {
+    console.error('🚨 Environment configuration validation failed!');
+} else {
+    console.log('🎉 Environment configuration loaded successfully!');
+}
 
 // Make available globally
 window.ENV = envLoader;
 
-// Also export for module systems
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = envLoader;
-}
+// Also make the config directly available for easier access
+window.FIREBASE_CONFIG = {
+    apiKey: envLoader.get('FIREBASE_API_KEY'),
+    authDomain: envLoader.get('FIREBASE_AUTH_DOMAIN'),
+    projectId: envLoader.get('FIREBASE_PROJECT_ID'),
+    storageBucket: envLoader.get('FIREBASE_STORAGE_BUCKET'),
+    messagingSenderId: envLoader.get('FIREBASE_MESSAGING_SENDER_ID'),
+    appId: envLoader.get('FIREBASE_APP_ID'),
+    measurementId: envLoader.get('FIREBASE_MEASUREMENT_ID')
+};
+
+console.log('🔧 Firebase config object created:', window.FIREBASE_CONFIG);
