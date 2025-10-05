@@ -500,15 +500,23 @@ body.light-mode .stat-label {
 }
 
 .college-logo-img, .event-logo-img {
-    width: 85%;
-    height: 85%;
+    width: 75%;
+    height: 75%;
     object-fit: contain;
     background: none !important;
     border: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
 }
-
+.event-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
 /* Mobile logos container - hidden on desktop */
 .mobile-logos-container {
     display: none;
