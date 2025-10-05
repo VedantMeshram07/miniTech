@@ -1,11 +1,11 @@
 /**
  * Science Event Details Page - JavaScript
- * Handles theme tggling, scroll effects and mobile interactions
+ * Handles theme toggling, scroll effects and mobile interactions
  */
 
 // Initialize theme and interactions when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
-
+    console.log('🔬 Science Event page loading...');
     
     // Initialize theme before rendering
     initializeTheme();
@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Setup interactions
     setupThemeToggle();
     setupScrollEffects();
+    setupMobileNavigation();
     
-
+    console.log('✅ Science Event page initialized');
 });
 
 /**
@@ -27,7 +28,7 @@ function initializeTheme() {
         const theme = savedTheme || (prefersDark ? 'dark' : 'light');
         
         document.documentElement.setAttribute('data-theme', theme);
-
+        console.log(`🎨 Theme initialized: ${theme}`);
     } catch (error) {
         console.warn('⚠️ Theme initialization failed:', error);
     }
@@ -125,12 +126,33 @@ function setupScrollEffects() {
 }
 
 /**
+ * Setup mobile navigation toggle
+ */
+function setupMobileNavigation() {
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (!navToggle || !navMenu) {
+        console.warn('⚠️ Mobile navigation elements not found');
+        return;
+    }
+    
+    navToggle.addEventListener('click', function() {
+        navMenu.classList.toggle('active');
+        navToggle.classList.toggle('active');
+        console.log('📱 Mobile navigation toggled');
+    });
+    
+    console.log('📱 Mobile navigation initialized');
+}
+
+/**
  * Handle registration button click
  */
 function handleRegistration(url) {
     if (url) {
         window.open(url, '_blank');
-
+        console.log('🎯 Registration link opened');
     } else {
         console.warn('⚠️ No registration URL provided');
         showNotification('Registration link not available', 'error');

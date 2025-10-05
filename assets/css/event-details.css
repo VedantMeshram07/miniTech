@@ -1024,6 +1024,15 @@ body.light-mode {
     }
 }
 
+.registration-section {
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+}
+
+.registration-section .event-actions {
+    justify-content: center;
+}
+
 @media (max-width: 480px) {
     .event-actions {
         align-items: stretch;

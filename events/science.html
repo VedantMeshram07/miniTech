@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Use custom science event CSS -->
+  <link rel="stylesheet" href="../assets/css/components/navbar.css">
   <link rel="stylesheet" href="../assets/css/science-event.css">
 </head>
 <body>
@@ -17,25 +18,24 @@
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-logo">
-        <a href="../index.html" style="color: white; text-decoration: none;">TechFest</a>
+        <a href="../index.html" class="logo-link">
+          <span id="nav-college-name">TechFest</span>
+        </a>
       </div>
       
-      <!-- Science Exhibition Mobile Logo (visible only on mobile) -->
-      <!--<a href="science.html" class="science-exhibition-mobile" title="Science Exhibition">
-          <i class="fas fa-flask"></i>
-      </a>-->
-      
       <div class="nav-controls">
-        <div class="nav-menu">
+        <div class="nav-menu" id="nav-menu">
           <a href="../index.html" class="nav-link">Home</a>
           <a href="../index.html#events" class="nav-link">Events</a>
           <a href="../index.html#about" class="nav-link">About</a>
           <a href="../index.html#contact" class="nav-link">Contact</a>
         </div>
         
-
+        <!--<button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <i class="fas fa-moon"></i>
+        </button>-->
         
-        <div class="nav-toggle">
+        <div class="nav-toggle" id="nav-toggle">
           <span></span>
           <span></span>
           <span></span>
@@ -46,111 +46,86 @@
 
   <!-- Event Section -->
   <section class="event-section">
-    <!-- 1. Event Poster -->
     <div class="event-poster">
-      <img src="../assets/images/event-poster.jpg" alt="Hackathon 2025 Event Poster">
+      <img src="../assets/images/event-poster.jpg" alt="Event Poster">
     </div>
-    
-    <!-- 2. Event Name -->
-    <div class="event-header">
+    <div class="event-name">
       <h1 class="event-title">Hackathon 2025</h1>
     </div>
-    
-    <!-- 3. Short Description -->
     <div class="event-description">
       <p>
-        A 24-hour coding marathon that challenges teams to build innovative tech solutions to real-world problems.
+        Hackathon 2025 is a 24-hour coding marathon that challenges teams to build innovative tech solutions to real-world problems.
+        Participants will brainstorm, prototype, and present their projects to a panel of judges from the tech industry.
+        Exciting prizes and internship opportunities await the winners!
       </p>
     </div>
+  </section>
 
-    <!-- 4. Prize Pool -->
-    <div class="event-info-card">
+  <!-- Event Details -->
+  <section class="event-details-section">
+    <div class="event-detail-item">
       <i class="fas fa-trophy"></i>
-      <div class="info-text">
-        <span class="info-label">Prize Pool</span>
-        <span class="info-value">₹30,000</span>
+      <div class="detail-content">
+        <span class="detail-label">Prize Pool</span>
+        <span class="detail-value">₹30,000</span>
       </div>
     </div>
-
-    <!-- 5. Date -->
-    <div class="event-info-card">
+    <div class="event-detail-item">
       <i class="fas fa-calendar"></i>
-      <div class="info-text">
-        <span class="info-label">Date</span>
-        <span class="info-value">14th–15th October 2025</span>
+      <div class="detail-content">
+        <span class="detail-label">Date</span>
+        <span class="detail-value">14th–15th October 2025</span>
       </div>
     </div>
-
-    <!-- 6. Participation -->
-    <div class="event-info-card">
+    <div class="event-detail-item">
       <i class="fas fa-users"></i>
-      <div class="info-text">
-        <span class="info-label">Participation</span>
-        <span class="info-value">Team Event</span>
+      <div class="detail-content">
+        <span class="detail-label">Participation</span>
+        <span class="detail-value">Team Event</span>
       </div>
     </div>
-
-    <!-- 7. Team Size -->
-    <div class="event-info-card">
+    <div class="event-detail-item">
       <i class="fas fa-user-friends"></i>
-      <div class="info-text">
-        <span class="info-label">Team Size</span>
-        <span class="info-value">2–4 members</span>
+      <div class="detail-content">
+        <span class="detail-label">Team Size</span>
+        <span class="detail-value">2–4 members</span>
       </div>
     </div>
+  </section>
 
-    <!-- 8. Rules -->
-    <div class="event-rules">
-      <h2><i class="fas fa-list-check"></i> Rules & Guidelines</h2>
-      <ul>
-        <li>Each team must consist of 2 to 4 members.</li>
-        <li>Projects must be completed within the given 24-hour period.</li>
-        <li>Use of AI and open-source tools is encouraged.</li>
-        <li>Judging will be based on innovation, impact, and technical quality.</li>
-        <li>All team members must be present during the event.</li>
-        <li>Final presentation is mandatory for all participating teams.</li>
-      </ul>
-    </div>
+  <!-- Rules Section -->
+  <section class="event-rules-section">
+    <h2><i class="fas fa-list-check"></i> Rules & Guidelines</h2>
+    <ul>
+      <li>Each team must consist of 2 to 4 members.</li>
+      <li>Projects must be completed within the given 24-hour period.</li>
+      <li>Use of AI and open-source tools is encouraged.</li>
+      <li>Judging will be based on innovation, impact, and technical quality.</li>
+    </ul>
+  </section>
 
-    <!-- 9. Register Button -->
-    <div class="event-registration">
-      <button class="register-btn" onclick="window.open('https://forms.gle/exampleFormLink', '_blank')">
-        <i class="fas fa-user-plus"></i> Register Now
-      </button>
-    </div>
+  <!-- Registration Section -->
+  <section class="event-registration-section">
+    <button class="register-btn" onclick="window.open('https://forms.gle/exampleFormLink', '_blank')">
+      <i class="fas fa-user-plus"></i> Register Now
+    </button>
+  </section>
 
-    <!-- 10. Long Description -->
-    <div class="event-long-description">
-      <h3>About the Event</h3>
-      <p>
-        Hackathon 2025 is the ultimate coding challenge that brings together the brightest minds in technology. 
-        Participants will brainstorm, prototype, and present their projects to a panel of judges from leading tech companies. 
-        This intensive 24-hour event is designed to push your creativity and technical skills to the limit.
-      </p>
-      <p>
-        Whether you're a seasoned developer or a passionate beginner, this hackathon offers an incredible opportunity 
-        to learn, network, and showcase your talents. Exciting prizes, internship opportunities, and industry recognition 
-        await the winners. Join us for an unforgettable journey of innovation and collaboration!
-      </p>
-      
-      <div class="event-venue">
-        <h4><i class="fas fa-map-marker-alt"></i> Venue Information</h4>
-        <p>Main Computer Lab, Ground Floor</p>
-        <p>College of Engineering</p>
-      </div>
-
-      <div class="coordinators">
-        <h4><i class="fas fa-headset"></i> Event Coordinators</h4>
-        <div class="coordinator-item">
-          <i class="fas fa-user"></i>
-          <span>John Doe - +91 9876543210</span>
-        </div>
-        <div class="coordinator-item">
-          <i class="fas fa-user"></i>
-          <span>Jane Smith - +91 9123456789</span>
-        </div>
-      </div>
-    </div>
+  <!-- Long Description -->
+  <section class="event-long-description">
+    <h2>About Hackathon 2025</h2>
+    <p>
+      Join us for an exhilarating 24-hour coding marathon where innovation meets implementation.
+      Teams will work together to solve real-world problems using cutting-edge technology.
+      Whether you're a seasoned developer or just starting your coding journey, this hackathon
+      offers the perfect platform to showcase your skills, learn from peers, and potentially
+      launch the next big idea.
+    </p>
+    <p>
+      Our expert panel of judges from leading tech companies will evaluate projects based on
+      innovation, technical excellence, and real-world impact. Winners will receive substantial
+      cash prizes and may be offered internship opportunities at prestigious organizations.
+    </p>
   </section>
 
   <!-- Firebase Config (kept from original) -->
@@ -162,6 +137,27 @@
   <script src="../assets/js/science-details.js"></script>
   <!-- Mouse Trail Effect -->
   <script src="../assets/js/mouse-trail.js"></script>
-
+  
+  <!-- Theme Initialization -->
+  <script>
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            
+            // Set data-theme attribute
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            // Set body class for light mode
+            if (theme === 'light') {
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+            }
+        } catch (_) {}
+    });
+  </script>
 </body>
 </html>

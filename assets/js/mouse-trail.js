@@ -77,59 +77,61 @@ class MouseTrail {
     }
 
     bindEvents() {
-        // Handle mouse movement
+        // Mouse events
         document.addEventListener('mousemove', (e) => {
             if (!this.isEnabled) return;
-            
+
             this.mouseX = e.clientX;
             this.mouseY = e.clientY;
             this.lastMouseMoveTime = Date.now();
             this.isRetracting = false;
-            
+
             // Add new point to trail
             this.addTrailPoint(this.mouseX, this.mouseY);
         });
 
-        // Handle touch movement for mobile devices
+        // Touch events for mobile devices
         document.addEventListener('touchmove', (e) => {
             if (!this.isEnabled) return;
-            e.preventDefault(); // Prevent scrolling while dragging
-            
+
+            // Prevent scrolling while drawing trail
+            e.preventDefault();
+
             const touch = e.touches[0];
             this.mouseX = touch.clientX;
             this.mouseY = touch.clientY;
             this.lastMouseMoveTime = Date.now();
             this.isRetracting = false;
-            
+
             // Add new point to trail
             this.addTrailPoint(this.mouseX, this.mouseY);
         }, { passive: false });
 
-        // Handle touch start
+        // Touch start to enable trail
         document.addEventListener('touchstart', (e) => {
-            if (!this.isEnabled) return;
-            
+            this.isEnabled = true;
+            this.trailContainer.style.display = 'block';
+
             const touch = e.touches[0];
             this.mouseX = touch.clientX;
             this.mouseY = touch.clientY;
             this.lastMouseMoveTime = Date.now();
             this.isRetracting = false;
-            
-            // Add initial touch point
+
+            // Add initial point
             this.addTrailPoint(this.mouseX, this.mouseY);
         });
 
-        // Handle touch end
+        // Touch end to start retraction
         document.addEventListener('touchend', () => {
             this.fadeOutTrail();
         });
 
-        // Keep trail enabled on all devices now
-        this.isEnabled = true;
-
-        // Clear trail when mouse leaves window
+        // Clear trail when mouse leaves window (desktop only)
         document.addEventListener('mouseleave', () => {
-            this.fadeOutTrail();
+            if (!('ontouchstart' in window)) {
+                this.fadeOutTrail();
+            }
         });
 
         document.addEventListener('mouseenter', () => {
@@ -323,8 +325,6 @@ function initMouseTrail() {
                 }
             }
         });
-        
-        console.log('🎯 Mouse trail effect initialized! Press Ctrl+T to toggle, Ctrl+R to change color.');
     }
 }
 

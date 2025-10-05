@@ -124,7 +124,7 @@ function normalizeEvent(raw) {
 // Load event details
 async function loadEventDetails(eventId) {
     try {
-        console.log('📋 Loading event data for ID:', eventId);
+        console.log('Event ID:', eventId);
         
         // First try to load fresh data from Firestore (preferred)
         // Prefer DatabaseManager if available
