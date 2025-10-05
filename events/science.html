@@ -33,9 +33,7 @@
           <a href="../index.html#contact" class="nav-link">Contact</a>
         </div>
         
-        <!--<button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">
-          <i class="fas fa-moon"></i>
-        </button> -->
+
         
         <div class="nav-toggle">
           <span></span>
@@ -48,40 +46,60 @@
 
   <!-- Event Section -->
   <section class="event-section">
+    <!-- 1. Event Poster -->
     <div class="event-poster">
-      <img src="../assets/images/event-poster.jpg" alt="Event Poster">
+      <img src="../assets/images/event-poster.jpg" alt="Hackathon 2025 Event Poster">
+    </div>
+    
+    <!-- 2. Event Name -->
+    <div class="event-header">
       <h1 class="event-title">Hackathon 2025</h1>
     </div>
+    
+    <!-- 3. Short Description -->
     <div class="event-description">
       <p>
-        Hackathon 2025 is a 24-hour coding marathon that challenges teams to build innovative tech solutions to real-world problems. 
-        Participants will brainstorm, prototype, and present their projects to a panel of judges from the tech industry. 
-        Exciting prizes and internship opportunities await the winners!
+        A 24-hour coding marathon that challenges teams to build innovative tech solutions to real-world problems.
       </p>
     </div>
-  </section>
 
-  <!-- Details + Rules -->
-  <section class="event-details-grid">
-    <div class="event-cards">
-      <div class="event-card">
-        <i class="fas fa-trophy"></i>
-        <div class="card-text">Prize Pool: ₹30,000</div>
-      </div>
-      <div class="event-card">
-        <i class="fas fa-calendar"></i>
-        <div class="card-text">Date: 14th–15th October 2025</div>
-      </div>
-      <div class="event-card">
-        <i class="fas fa-user-friends"></i>
-        <div class="card-text">Team Size: 2–4 members</div>
-      </div>
-      <div class="event-card">
-        <i class="fas fa-map-marker-alt"></i>
-        <div class="card-text">Venue: Main Computer Lab</div>
+    <!-- 4. Prize Pool -->
+    <div class="event-info-card">
+      <i class="fas fa-trophy"></i>
+      <div class="info-text">
+        <span class="info-label">Prize Pool</span>
+        <span class="info-value">₹30,000</span>
       </div>
     </div>
 
+    <!-- 5. Date -->
+    <div class="event-info-card">
+      <i class="fas fa-calendar"></i>
+      <div class="info-text">
+        <span class="info-label">Date</span>
+        <span class="info-value">14th–15th October 2025</span>
+      </div>
+    </div>
+
+    <!-- 6. Participation -->
+    <div class="event-info-card">
+      <i class="fas fa-users"></i>
+      <div class="info-text">
+        <span class="info-label">Participation</span>
+        <span class="info-value">Team Event</span>
+      </div>
+    </div>
+
+    <!-- 7. Team Size -->
+    <div class="event-info-card">
+      <i class="fas fa-user-friends"></i>
+      <div class="info-text">
+        <span class="info-label">Team Size</span>
+        <span class="info-value">2–4 members</span>
+      </div>
+    </div>
+
+    <!-- 8. Rules -->
     <div class="event-rules">
       <h2><i class="fas fa-list-check"></i> Rules & Guidelines</h2>
       <ul>
@@ -89,21 +107,49 @@
         <li>Projects must be completed within the given 24-hour period.</li>
         <li>Use of AI and open-source tools is encouraged.</li>
         <li>Judging will be based on innovation, impact, and technical quality.</li>
+        <li>All team members must be present during the event.</li>
+        <li>Final presentation is mandatory for all participating teams.</li>
       </ul>
     </div>
-  </section>
 
-  <!-- Registration + Coordinators -->
-  <section class="event-footer-grid">
-    <div>
+    <!-- 9. Register Button -->
+    <div class="event-registration">
       <button class="register-btn" onclick="window.open('https://forms.gle/exampleFormLink', '_blank')">
         <i class="fas fa-user-plus"></i> Register Now
       </button>
     </div>
-    <div class="coordinators">
-      <h3>Event Coordinators</h3>
-      <div class="coordinator-item">John Doe - +91 9876543210</div>
-      <div class="coordinator-item">Jane Smith - +91 9123456789</div>
+
+    <!-- 10. Long Description -->
+    <div class="event-long-description">
+      <h3>About the Event</h3>
+      <p>
+        Hackathon 2025 is the ultimate coding challenge that brings together the brightest minds in technology. 
+        Participants will brainstorm, prototype, and present their projects to a panel of judges from leading tech companies. 
+        This intensive 24-hour event is designed to push your creativity and technical skills to the limit.
+      </p>
+      <p>
+        Whether you're a seasoned developer or a passionate beginner, this hackathon offers an incredible opportunity 
+        to learn, network, and showcase your talents. Exciting prizes, internship opportunities, and industry recognition 
+        await the winners. Join us for an unforgettable journey of innovation and collaboration!
+      </p>
+      
+      <div class="event-venue">
+        <h4><i class="fas fa-map-marker-alt"></i> Venue Information</h4>
+        <p>Main Computer Lab, Ground Floor</p>
+        <p>College of Engineering</p>
+      </div>
+
+      <div class="coordinators">
+        <h4><i class="fas fa-headset"></i> Event Coordinators</h4>
+        <div class="coordinator-item">
+          <i class="fas fa-user"></i>
+          <span>John Doe - +91 9876543210</span>
+        </div>
+        <div class="coordinator-item">
+          <i class="fas fa-user"></i>
+          <span>Jane Smith - +91 9123456789</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -116,7 +162,6 @@
   <script src="../assets/js/science-details.js"></script>
   <!-- Mouse Trail Effect -->
   <script src="../assets/js/mouse-trail.js"></script>
-  <!-- Universal Theme Toggle -->
-  <script src="../assets/js/theme-toggle.js"></script>
+
 </body>
 </html>

@@ -35,9 +35,7 @@
                     <a href="../index.html#contact" class="nav-link">Contact</a>
                 </div>
                 
-                <!--<button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-                    <i class="fas fa-moon"></i>
-                </button>-->
+
                 
                 <div class="nav-toggle">
                     <span></span>
@@ -59,100 +57,109 @@
                 </button>
             </div>
 
-            <!-- Event Header -->
-            <div class="event-header">
-                <div class="event-image-container">
-                    <div id="event-image" class="event-image-large">
+            <!-- Restructured Event Layout -->
+            <div class="event-layout">
+                <!-- 1. Event Poster -->
+                <div class="event-poster-container">
+                    <div id="event-image" class="event-poster">
                         <i class="fas fa-laptop-code"></i>
                     </div>
                 </div>
-                <div class="event-info">
+                
+                <!-- 2. Event Name -->
+                <div class="event-name-section">
                     <div class="event-category">
                         <span id="event-category-badge">Technology</span>
                     </div>
                     <h1 id="event-title-main">Loading Event...</h1>
+                </div>
+                
+                <!-- 3. Short Description -->
+                <div class="event-short-description">
                     <p id="event-description-main">Loading description...</p>
-                    
-                    <div class="event-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-trophy"></i>
-                            <div>
-                                <span class="stat-label">Prize Pool</span>
-                                <span id="event-prize-amount" class="stat-value">₹0</span>
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-calendar"></i>
-                            <div>
-                                <span class="stat-label">Date</span>
-                                <span id="event-date-value" class="stat-value">TBD</span>
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-users"></i>
-                            <div>
-                                <span class="stat-label">Participation</span>
-                                <span id="event-participation-type" class="stat-value">Individual</span>
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-user-friends"></i>
-                            <div>
-                                <span class="stat-label">Team Size</span>
-                                <span id="event-team-requirements" class="stat-value">Individual</span>
-                            </div>
+                </div>
+                
+                <!-- 4. Prize Pool -->
+                <div class="event-info-item">
+                    <i class="fas fa-trophy"></i>
+                    <div class="info-content">
+                        <span class="info-label">Prize Pool</span>
+                        <span id="event-prize-amount" class="info-value">₹0</span>
+                    </div>
+                </div>
+                
+                <!-- 5. Date -->
+                <div class="event-info-item">
+                    <i class="fas fa-calendar"></i>
+                    <div class="info-content">
+                        <span class="info-label">Date</span>
+                        <span id="event-date-value" class="info-value">TBD</span>
+                    </div>
+                </div>
+                
+                <!-- 6. Participation -->
+                <div class="event-info-item">
+                    <i class="fas fa-users"></i>
+                    <div class="info-content">
+                        <span class="info-label">Participation</span>
+                        <span id="event-participation-type" class="info-value">Individual</span>
+                    </div>
+                </div>
+                
+                <!-- 7. Team Size -->
+                <div class="event-info-item">
+                    <i class="fas fa-user-friends"></i>
+                    <div class="info-content">
+                        <span class="info-label">Team Size</span>
+                        <span id="event-team-requirements" class="info-value">Individual</span>
+                    </div>
+                </div>
+                
+                <!-- 8. Rules -->
+                <div class="event-rules-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-list-check"></i>
+                        Rules & Guidelines
+                    </h2>
+                    <div id="event-rules" class="rules-content">
+                        <div class="loading-skeleton">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
                         </div>
                     </div>
-                    
-                    <div class="event-actions">
-                        <button class="btn btn-primary" onclick="handleRegistration()">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Register Now</span>
-                        </button>
-                    </div>
+                </div>
+                
+                <!-- 9. Register Button -->
+                <div class="event-registration-section">
+                    <button class="btn btn-primary register-btn" onclick="handleRegistration()">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Register Now</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Event Details Content -->
-            <div class="event-content">
-                <div class="content-main">
-                    <!-- Description -->
-                    <div class="content-section">
-                        <h2 class="section-title">
-                            <i class="fas fa-info-circle"></i>
-                            About This Event
-                        </h2>
-                        <div id="event-description-detailed" class="section-content">
-                            Loading detailed description...
-                        </div>
+            <!-- 10. Long Description -->
+            <div class="event-detailed-content">
+                <div class="content-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        About This Event
+                    </h2>
+                    <div id="event-description-detailed" class="section-content">
+                        Loading detailed description...
                     </div>
-
-                    <!-- Rules -->
-                    <div class="content-section">
-                        <h2 class="section-title">
-                            <i class="fas fa-list-check"></i>
-                            Rules & Guidelines
-                        </h2>
-                        <div id="event-rules" class="section-content">
-                            <div class="loading-skeleton">
-                                <div class="skeleton-item"></div>
-                                <div class="skeleton-item"></div>
-                                <div class="skeleton-item"></div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
-                <div class="content-sidebar">
-                    <!-- Event Coordinators -->
-                    <div class="sidebar-card">
-                        <h3>Event Coordinators</h3>
-                        <div id="event-coordinators" class="coordinators-list">
-                            <div class="loading-skeleton">
-                                <div class="skeleton-coordinator"></div>
-                                <div class="skeleton-coordinator"></div>
-                            </div>
+                <div class="coordinators-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-headset"></i>
+                        Event Coordinators
+                    </h3>
+                    <div id="event-coordinators" class="coordinators-list">
+                        <div class="loading-skeleton">
+                            <div class="skeleton-coordinator"></div>
+                            <div class="skeleton-coordinator"></div>
                         </div>
                     </div>
                 </div>
@@ -243,7 +250,6 @@
     <script src="../assets/js/event-details.js"></script>
     <!-- Mouse Trail Effect -->
     <script src="../assets/js/mouse-trail.js"></script>
-    <!-- Universal Theme Toggle -->
-    <script src="../assets/js/theme-toggle.js"></script>
+
 </body>
 </html>

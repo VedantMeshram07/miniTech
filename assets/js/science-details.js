@@ -1,11 +1,11 @@
 /**
  * Science Event Details Page - JavaScript
- * Handles theme toggling, scroll effects and mobile interactions
+ * Handles theme tggling, scroll effects and mobile interactions
  */
 
 // Initialize theme and interactions when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔬 Science Event page loading...');
+
     
     // Initialize theme before rendering
     initializeTheme();
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupThemeToggle();
     setupScrollEffects();
     
-    console.log('✅ Science Event page initialized');
+
 });
 
 /**
@@ -27,7 +27,7 @@ function initializeTheme() {
         const theme = savedTheme || (prefersDark ? 'dark' : 'light');
         
         document.documentElement.setAttribute('data-theme', theme);
-        console.log(`🎨 Theme initialized: ${theme}`);
+
     } catch (error) {
         console.warn('⚠️ Theme initialization failed:', error);
     }
@@ -130,7 +130,7 @@ function setupScrollEffects() {
 function handleRegistration(url) {
     if (url) {
         window.open(url, '_blank');
-        console.log('🎯 Registration link opened');
+
     } else {
         console.warn('⚠️ No registration URL provided');
         showNotification('Registration link not available', 'error');

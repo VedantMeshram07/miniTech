@@ -77,6 +77,7 @@ class MouseTrail {
     }
 
     bindEvents() {
+        // Handle mouse movement
         document.addEventListener('mousemove', (e) => {
             if (!this.isEnabled) return;
             
@@ -89,11 +90,42 @@ class MouseTrail {
             this.addTrailPoint(this.mouseX, this.mouseY);
         });
 
-        // Disable trail on mobile devices
-        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-            this.isEnabled = false;
-            this.trailContainer.style.display = 'none';
-        }
+        // Handle touch movement for mobile devices
+        document.addEventListener('touchmove', (e) => {
+            if (!this.isEnabled) return;
+            e.preventDefault(); // Prevent scrolling while dragging
+            
+            const touch = e.touches[0];
+            this.mouseX = touch.clientX;
+            this.mouseY = touch.clientY;
+            this.lastMouseMoveTime = Date.now();
+            this.isRetracting = false;
+            
+            // Add new point to trail
+            this.addTrailPoint(this.mouseX, this.mouseY);
+        }, { passive: false });
+
+        // Handle touch start
+        document.addEventListener('touchstart', (e) => {
+            if (!this.isEnabled) return;
+            
+            const touch = e.touches[0];
+            this.mouseX = touch.clientX;
+            this.mouseY = touch.clientY;
+            this.lastMouseMoveTime = Date.now();
+            this.isRetracting = false;
+            
+            // Add initial touch point
+            this.addTrailPoint(this.mouseX, this.mouseY);
+        });
+
+        // Handle touch end
+        document.addEventListener('touchend', () => {
+            this.fadeOutTrail();
+        });
+
+        // Keep trail enabled on all devices now
+        this.isEnabled = true;
 
         // Clear trail when mouse leaves window
         document.addEventListener('mouseleave', () => {
