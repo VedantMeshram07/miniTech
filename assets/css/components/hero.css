@@ -7,7 +7,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 60px 0 var(--space-8);
+    padding: 52px 0 var(--space-8);
     background: #000000;
     overflow: hidden;
     transition: background-color 0.3s ease;
@@ -473,11 +473,11 @@ body.light-mode .stat-label {
 /* Organization Header Section */
 .organization-header {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto var(--spacing-md) auto;
+    margin: var(--spacing-lg) auto var(--spacing-md) auto;
     padding: 0;
     position: relative;
     z-index: 50;
@@ -485,8 +485,8 @@ body.light-mode .stat-label {
 
 .header-logo {
     flex: 0 0 auto;
-    width: 212px; /* 85% of 250px */
-    height: 212px; /* 85% of 250px */
+    width: 150px; /* Reduced size to prevent overlap */
+    height: 150px; /* Reduced size to prevent overlap */
     background: none !important;
     border-radius: 0;
     padding: 0;
@@ -500,8 +500,8 @@ body.light-mode .stat-label {
 }
 
 .college-logo-img, .event-logo-img {
-    width: 75%;
-    height: 75%;
+    width: 80%;
+    height: 80%;
     object-fit: contain;
     background: none !important;
     border: none !important;
@@ -559,7 +559,7 @@ body.light-mode .college-small {
     font-size: clamp(2.2rem, 5vw, 3.2rem);
     font-weight: 900;
     color: white;
-    margin: 0 0 var(--spacing-xs) 0;
+    margin: 0 0 2px 0;
     line-height: var(--leading-tight);
     letter-spacing: -1px;
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
