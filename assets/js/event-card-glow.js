@@ -67,7 +67,7 @@ class EventCardGlow {
         this.cards.push(cardData);
         console.log('Setup glow for card:', card, 'with container:', glowContainer);
 
-        // Add hover listeners
+        // Add hover listeners (mouse)
         card.addEventListener('mouseenter', () => {
             cardData.isHovered = true;
             this.pauseCardAnimation(cardData);
@@ -77,6 +77,27 @@ class EventCardGlow {
             cardData.isHovered = false;
             this.resumeCardAnimation(cardData);
         });
+
+        // Pointer / Touch support for mobile devices
+        // Use pointer events when available to unify mouse/touch/pen
+        const pointerDownHandler = (e) => {
+            // Ignore secondary touches/gestures
+            cardData.isHovered = true;
+            this.pauseCardAnimation(cardData);
+        };
+
+        const pointerUpHandler = (e) => {
+            cardData.isHovered = false;
+            this.resumeCardAnimation(cardData);
+        };
+
+        // Pointer events (preferred)
+        card.addEventListener('pointerdown', pointerDownHandler, { passive: true });
+        card.addEventListener('pointerup', pointerUpHandler, { passive: true });
+
+        // Fallback for browsers that might not support pointer events
+        card.addEventListener('touchstart', pointerDownHandler, { passive: true });
+        card.addEventListener('touchend', pointerUpHandler, { passive: true });
 
         // Position glow container
         this.positionGlowContainer(cardData);

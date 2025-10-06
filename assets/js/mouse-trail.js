@@ -305,11 +305,15 @@ class MouseTrail {
 let mouseTrail = null;
 
 function initMouseTrail() {
-    // Only initialize on desktop devices
+    // Initialize on all devices (desktop + touch)
+    // MouseTrail already handles touch events; enabling it on mobile keeps effects consistent
+    mouseTrail = new MouseTrail();
+
+    // Expose instance globally for debug/control
+    window.mouseTrail = mouseTrail;
+
+    // Keyboard shortcuts only for non-touch devices
     if (!('ontouchstart' in window) && !navigator.maxTouchPoints) {
-        mouseTrail = new MouseTrail();
-        
-        // Add keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key.toLowerCase() === 't' && e.ctrlKey) {
                 e.preventDefault();
