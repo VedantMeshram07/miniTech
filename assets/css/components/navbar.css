@@ -182,7 +182,7 @@
     }
     
     .nav-menu {
-        display: none;
+        display: none !important;
         position: absolute;
         top: 100%;
         left: 0;
@@ -194,10 +194,16 @@
         gap: 0;
         padding: var(--space-4);
         box-shadow: var(--shadow-lg);
+        z-index: 9999;
     }
-    
-    .nav-menu.active { 
-        display: flex; 
+    .nav-menu.active {
+        display: flex !important;
+    }
+    body.menu-open {
+        overflow: hidden;
+    }
+    .nav-toggle {
+        display: flex !important;
     }
     
     .nav-link { 
