@@ -70,8 +70,8 @@ class MouseTrail {
         this.trailPath.setAttribute('stroke-linecap', 'round');
         this.trailPath.setAttribute('stroke-linejoin', 'round');
         this.trailPath.setAttribute('stroke-opacity', 0.8);
-        // Drop-shadow filter is expensive on mobile; add only for non-touch devices
-        if (!isTouch) this.trailPath.style.filter = `drop-shadow(0 0 4px rgba(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b}, 0.35))`;
+    // Drop-shadow filter is expensive on mobile; add only for non-touch devices
+    if (!this.isTouch) this.trailPath.style.filter = `drop-shadow(0 0 4px rgba(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b}, 0.35))`;
 
         this.trailContainer.appendChild(this.trailPath);
         document.body.appendChild(this.trailContainer);
@@ -249,15 +249,20 @@ class MouseTrail {
 // Initialize
 let mouseTrail = null;
 function initMouseTrail() {
+    // Only enable the trail on devices that support hover and a fine pointer
+    const isDesktopPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!isDesktopPointer) {
+        console.log('Mouse trail disabled: non-desktop pointer (touch) detected');
+        return;
+    }
+
     if (!mouseTrail) mouseTrail = new MouseTrail();
     window.mouseTrail = mouseTrail;
 
-    if (!('ontouchstart' in window) && !navigator.maxTouchPoints) {
-        document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 't' && e.ctrlKey) { e.preventDefault(); if (mouseTrail) mouseTrail.toggle(); }
-            if (e.key.toLowerCase() === 'r' && e.ctrlKey) { e.preventDefault(); if (mouseTrail) mouseTrail.changeColor(); }
-        });
-    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 't' && e.ctrlKey) { e.preventDefault(); if (mouseTrail) mouseTrail.toggle(); }
+        if (e.key.toLowerCase() === 'r' && e.ctrlKey) { e.preventDefault(); if (mouseTrail) mouseTrail.changeColor(); }
+    });
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMouseTrail);

@@ -271,9 +271,14 @@ class MouseTrail {
 let mouseTrail = null;
 
 function initMouseTrail() {
-    // Only initialize on desktop devices
-    if (!('ontouchstart' in window) && !navigator.maxTouchPoints) {
-        mouseTrail = new MouseTrail();
+    // Only initialize on devices that support hover and have a fine pointer
+    const isDesktopPointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!isDesktopPointer) {
+        console.log('Mouse trail disabled: non-desktop pointer (touch) detected');
+        return;
+    }
+
+    mouseTrail = new MouseTrail();
         
         // Add keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -292,8 +297,7 @@ function initMouseTrail() {
             }
         });
         
-        console.log('🎯 Mouse trail effect initialized! Press Ctrl+T to toggle, Ctrl+R to change color.');
-    }
+    console.log('🎯 Mouse trail effect initialized! Press Ctrl+T to toggle, Ctrl+R to change color.');
 }
 
 // Auto-initialize when script loads
