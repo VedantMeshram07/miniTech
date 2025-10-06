@@ -95,10 +95,10 @@
   <section class="event-rules-section">
     <h2><i class="fas fa-list-check"></i> Rules & Guidelines</h2>
     <ul>
-      <li>Rule1.</li>
-      <li>Rule2.</li>
-      <li>Rule3.</li>
-      <li>Rule4.</li>
+  <li><span class="rule-tick"><i class="fas fa-check"></i></span> <span class="rule-text">Rule 1: All projects must be original and created by the participants.</span></li>
+  <li><span class="rule-tick"><i class="fas fa-check"></i></span> <span class="rule-text">Rule 2: Each team can have a maximum of 4 members.</span></li>
+  <li><span class="rule-tick"><i class="fas fa-check"></i></span> <span class="rule-text">Rule 3: Projects must be set up by 9:00 AM on the event day.</span></li>
+  <li><span class="rule-tick"><i class="fas fa-check"></i></span> <span class="rule-text">Rule 4: Dangerous or hazardous materials are not allowed.</span></li>
     </ul>
   </section>
 
@@ -135,21 +135,16 @@ Students will present creative experiments, working models, and scientific ideas
   <script>
     // Initialize theme on page load
     document.addEventListener('DOMContentLoaded', function() {
-        try {
-            const saved = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = saved || (prefersDark ? 'dark' : 'light');
-            
-            // Set data-theme attribute
-            document.documentElement.setAttribute('data-theme', theme);
-            
-            // Set body class for light mode
-            if (theme === 'light') {
-                document.body.classList.add('light-mode');
-            } else {
-                document.body.classList.remove('light-mode');
-            }
-        } catch (_) {}
+    try {
+      const saved = localStorage.getItem('theme');
+      const theme = saved || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+      } else {
+        document.body.classList.remove('light-mode');
+      }
+    } catch (_) {}
     });
   </script>
 </body>

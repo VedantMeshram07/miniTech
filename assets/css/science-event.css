@@ -13,7 +13,6 @@ body {
     position: relative;
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
-}
 
 /* Light mode body styles */
 body.light-mode {
@@ -480,6 +479,23 @@ body.light-mode {
 
 .event-rules ul li {
     margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.rule-tick {
+    color: var(--primary-color);
+    font-size: 1.1em;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.rule-text {
+    color: inherit;
+    font-size: 1em;
+    line-height: 1.6;
+}
 }
 
 /* Registration + Coordinators - Enhanced styling */
