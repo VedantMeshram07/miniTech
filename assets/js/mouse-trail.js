@@ -7,8 +7,24 @@
 
 class MouseTrail {
     constructor(options = {}) {
-        this.maxPoints = options.maxPoints || 20;
-        this.trailPoints = [];
+        // Detect touch devices to use cheaper defaults
+        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+
+        // maxPoints acts as a ceiling on number of stored points for smoothing
+        this.maxPoints = options.maxPoints || (isTouch ? 14 : 30);
+        // minimum pixel distance between recorded points (reduces noise)
+        this.minDistance = options.minDistance || (isTouch ? 8 : 6);
+        // maximum total path length in pixels (cap to limit CPU and visual length)
+        this.maxPathLength = options.maxPathLength || 200; // px
+
+        // Throttle updates on lower-powered / touch devices
+    this.updateInterval = options.updateInterval || (isTouch ? 40 : 16); // ms; ~25fps on touch
+    this._lastFrameTime = 0;
+    this.trailPoints = [];
+    this.isTouch = isTouch;
+    this.segmentLengths = [];
+    this.totalLength = 0;
+    this._dirty = true;
         this.mouseX = 0;
         this.mouseY = 0;
         this.isEnabled = true;
@@ -47,15 +63,15 @@ class MouseTrail {
             zIndex: 9999
         });
         this.trailPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        Object.assign(this.trailPath.style, {
-            fill: 'none',
-            stroke: `rgba(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b}, 0.7)`,
-            strokeWidth: 2,
-            strokeLinecap: 'round',
-            strokeLinejoin: 'round',
-            filter: `drop-shadow(0 0 4px rgba(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b}, 0.35))`,
-            opacity: 0.8
-        });
+        // Use attributes for cheap updates and avoid expensive style concatenation each frame
+        this.trailPath.setAttribute('fill', 'none');
+        this.trailPath.setAttribute('stroke', `rgb(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b})`);
+        this.trailPath.setAttribute('stroke-width', 2);
+        this.trailPath.setAttribute('stroke-linecap', 'round');
+        this.trailPath.setAttribute('stroke-linejoin', 'round');
+        this.trailPath.setAttribute('stroke-opacity', 0.8);
+        // Drop-shadow filter is expensive on mobile; add only for non-touch devices
+        if (!isTouch) this.trailPath.style.filter = `drop-shadow(0 0 4px rgba(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b}, 0.35))`;
 
         this.trailContainer.appendChild(this.trailPath);
         document.body.appendChild(this.trailContainer);
@@ -112,8 +128,44 @@ class MouseTrail {
     }
 
     addTrailPoint(x, y) {
+        // Avoid adding points that are too close to the most recent point
+        const last = this.trailPoints[0];
+        if (last) {
+            const dx = last.x - x;
+            const dy = last.y - y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < this.minDistance * this.minDistance) return;
+        }
+
+        // Insert at head
         this.trailPoints.unshift({ x, y, timestamp: Date.now() });
-        if (this.trailPoints.length > this.maxPoints) this.trailPoints.pop();
+
+        // Update segment lengths and total length
+        if (this.trailPoints.length > 1) {
+            const a = this.trailPoints[0];
+            const b = this.trailPoints[1];
+            const segLen = Math.hypot(a.x - b.x, a.y - b.y);
+            this.segmentLengths.unshift(segLen);
+            this.totalLength += segLen;
+        }
+
+        // Enforce max points (pop from tail)
+        while (this.trailPoints.length > this.maxPoints) {
+            this.trailPoints.pop();
+            const removed = this.segmentLengths.pop();
+            if (typeof removed === 'number') this.totalLength -= removed;
+            if (this.totalLength < 0) this.totalLength = 0;
+        }
+
+        // Trim by total path length
+        while (this.totalLength > this.maxPathLength && this.segmentLengths.length > 0) {
+            const removed = this.segmentLengths.pop();
+            this.trailPoints.pop();
+            if (typeof removed === 'number') this.totalLength -= removed;
+            if (this.totalLength < 0) this.totalLength = 0;
+        }
+
+        this._dirty = true;
     }
 
     fadeOutTrail() { this.lastMouseMoveTime = Date.now() - 1600; this.isRetracting = true; }
@@ -141,6 +193,9 @@ class MouseTrail {
             return;
         }
 
+        // If nothing changed and we're not retracting, skip recomputing the path
+        if (!this._dirty && !this.isRetracting) return;
+
         let pathData = `M ${visiblePoints[0].x} ${visiblePoints[0].y}`;
         if (visiblePoints.length === 2) {
             pathData += ` L ${visiblePoints[1].x} ${visiblePoints[1].y}`;
@@ -165,12 +220,24 @@ class MouseTrail {
             opacity = 0.7 * (1 - retractionProgress * 0.4);
         }
 
-        this.trailPath.style.stroke = `rgba(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b}, ${opacity})`;
+        this.trailPath.setAttribute('stroke-opacity', opacity);
+        this.trailPath.setAttribute('stroke', `rgb(${this.trailColor.r}, ${this.trailColor.g}, ${this.trailColor.b})`);
+        if (!this.isRetracting) this._dirty = false;
     }
 
     updateTrail() { if (!this.isEnabled) return; this.updateTrailPath(); }
 
-    animate() { this.updateTrail(); requestAnimationFrame(() => this.animate()); }
+    animate(timestamp) {
+        // requestAnimationFrame provides timestamp; fall back to Date.now()
+        const now = typeof timestamp === 'number' ? timestamp : performance.now();
+        if (!this._lastFrameTime) this._lastFrameTime = now;
+        const delta = now - this._lastFrameTime;
+        if (delta >= this.updateInterval) {
+            this.updateTrail();
+            this._lastFrameTime = now;
+        }
+        requestAnimationFrame((t) => this.animate(t));
+    }
 
     enable() { this.isEnabled = true; if (this.trailContainer) this.trailContainer.style.display = 'block'; }
     disable() { this.isEnabled = false; this.fadeOutTrail(); }
