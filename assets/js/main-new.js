@@ -410,8 +410,11 @@ async function updateSiteContent(config) {
             console.log('✅ Updated nav title to:', siteTitle);
         }
         
-        // Update hero content
-        updateHeroContent(config);
+    // NOTE: Hero content is intentionally managed in HTML (hardcoded)
+    // to avoid admin/siteConfig overwriting values that are not
+    // being accepted reliably from the admin panel. Do not update
+    // the hero DOM here.
+    // updateHeroContent(config); // intentionally disabled
         
         // Update stats (async)
         await updateStatsContent(config);

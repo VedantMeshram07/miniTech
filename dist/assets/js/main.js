@@ -219,13 +219,16 @@ function updateSiteContent() {
         ['organizing-body', siteConfig.organizingBody],
         
         // Hero Section
-        ['hero-tagline', siteConfig.tagline],
-        ['hero-title-main', siteConfig.techfestName],
-        ['hero-theme', siteConfig.techfestTheme],
-        ['hero-description', siteConfig.heroDescription],
-        ['hero-dates', siteConfig.eventDates],
-        ['hero-venue', siteConfig.venue],
-        ['hero-total-prize', siteConfig.totalPrizePool],
+        // Hero content updates removed - hero is intentionally hardcoded
+        // in the HTML to avoid admin/siteConfig overwrites that were
+        // not being applied correctly from the admin panel.
+        // ['hero-tagline', siteConfig.tagline],
+        // ['hero-title-main', siteConfig.techfestName],
+        // ['hero-theme', siteConfig.techfestTheme],
+        // ['hero-description', siteConfig.heroDescription],
+        // ['hero-dates', siteConfig.eventDates],
+        // ['hero-venue', siteConfig.venue],
+        // ['hero-total-prize', siteConfig.totalPrizePool],
         
         // Statistics
         ['events-count', siteConfig.eventsCount],

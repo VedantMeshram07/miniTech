@@ -119,23 +119,61 @@
 }
 
 .coordinator-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    padding: 24px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
+    box-shadow: 
+        0 4px 20px rgba(139, 92, 246, 0.15),
+        0 8px 32px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
-    min-width: 200px;
-    max-width: 280px;
+    position: relative;
+    color: white;
 }
+
 
 /* Convenor card styling - Enhanced visibility */
 .convenor-card {
     flex: 0 0 auto;
-    border: 2px solid var(--accent);
-    background: var(--bg-primary);
+    /* Remove the blue/accent border to match faculty visuals */
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* Glow like faculty on hover: use a pseudo element so glow sits behind the card */
+.convenor-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: 16px;
+    background: transparent;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.convenor-card:hover {
+    /* purple glow on hover to match faculty look */
+    box-shadow: 
+        0 12px 48px rgba(139, 92, 246, 0.25),
+        0 8px 32px rgba(139, 92, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(139, 92, 246, 0.6);
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.convenor-card:hover::before {
+    opacity: 1;
 }
 
 /* Co-convenor cards styling */
@@ -146,9 +184,13 @@
 }
 
 .coordinator-card:hover {
-    background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(139, 92, 246, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 48px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .convenor-card .coordinator-avatar {
@@ -175,6 +217,39 @@
     margin: 0 auto var(--spacing-sm) auto;
     font-size: 1.5rem;
     color: white;
+}
+
+/* Image-specific avatar rules: ensure actual <img> fits the avatar and is circular */
+.coordinator-avatar img.coordinator-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Convenor specific size override */
+.convenor-card .coordinator-avatar {
+    width: 80px;
+    height: 80px;
+}
+
+/* Co-convenor specific size override */
+.co-convenor-card .coordinator-avatar {
+    width: 70px;
+    height: 70px;
+}
+
+/* Make rows behave responsively */
+.convenor-row, .co-convenors-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+@media (max-width: 720px) {
+    .co-convenors-row { flex-direction: column; align-items: center; }
 }
 
 .coordinator-card h4 {

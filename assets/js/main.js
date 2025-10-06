@@ -218,14 +218,8 @@ function updateSiteContent() {
         ['college-location', siteConfig.collegeLocation],
         ['organizing-body', siteConfig.organizingBody],
         
-        // Hero Section
-        ['hero-tagline', siteConfig.tagline],
-        ['hero-title-main', siteConfig.techfestName],
-        ['hero-theme', siteConfig.techfestTheme],
-        ['hero-description', siteConfig.heroDescription],
-        ['hero-dates', siteConfig.eventDates],
-        ['hero-venue', siteConfig.venue],
-        ['hero-total-prize', siteConfig.totalPrizePool],
+    // Hero Section - intentionally omitted to keep hero content hardcoded
+    // Hero content is managed directly in the HTML (hardcoded) to avoid issues with admin updates not applying
         
         // Statistics
         ['events-count', siteConfig.eventsCount],
